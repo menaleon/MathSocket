@@ -1,4 +1,4 @@
-public class Adapter {
+/**public class Adapter {
     int c1;
     int c2;
     int c3;
@@ -16,27 +16,7 @@ public class Adapter {
     int c15;
     int c16;
     public static void main(String[] args) {
-        System.out.println("Sirve");
-    }
-public class Adapter {
-    int c1;
-    int c2;
-    int c3;
-    int c4;
-    int c5;
-    int c6;
-    int c7;
-    int c8;
-    int c9;
-    int c10;
-    int c11;
-    int c12;
-    int c13;
-    int c14;
-    int c15;
-    int c16;
 
-    public static void main(String[] args) {
         System.out.println("Sirve");
     }
 
@@ -127,4 +107,4 @@ public class Adapter {
         int c16 = Integer.parseInt(stringArray[15]);
         return new Adapter (c1, c2, c3, c4, c5, c6, c7, c8, c9, c10, c11, c12, c13, c14, c15, c16);
     }
-}
+}**/

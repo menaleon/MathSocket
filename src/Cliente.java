@@ -16,7 +16,6 @@ public class Cliente extends Thread{
     public String nombreJugador2; // Nombre del Jugador
     public JFrame winGame;
     public DoublyLinkedList tableroRecibido;
-    public String nombreJugador2; // Nombre del Jugador
 
     /*
     * Función que en primer lugar conecta al cliente en el puerto del server, intercambia mensajes con el
@@ -24,8 +23,6 @@ public class Cliente extends Thread{
     */
     //public void conectarServer(){
     @Override
-    public void run() {
-    //public void conectarServer(){ @Override
     public void run() {
         //Declaración de las variables usadas en la función.
         Socket socket;  // Variable que va a contener la conexión entre el cliente y el servidor.
