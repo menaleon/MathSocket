@@ -1,10 +1,13 @@
-import javax.swing.*;
+/**import javax.swing.*;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Objects;
 import java.util.Random;
+
+
+// ESTA CLASE YA NO SE USA. LA INTERFAZ SE TRASLADÓ A LA CLASE DE LA DOUBLYLINKEDLIST
 
 public class GameWin extends JComponent{
     DoublyLinkedList list = new DoublyLinkedList();
@@ -22,17 +25,17 @@ public class GameWin extends JComponent{
                 //g.drawImage(img.getImage(), 160 * (i-1) + 20, 100 * (j-1) + 50, 140, 86, null);
                 tipoCasilla = random.nextInt(3);
                 if(tipoCasilla == 0 && tunel < 4){
-                    list.insertLast("Túnel");
+                    list.insertLast("Túnel", 0);
                     g.setColor(Color.blue);
                     g.drawString("Túnel", 160 * (i-1) + 30,100 * (j-1) + 70);
                     tunel++;
                 }else if(tipoCasilla == 1 && trampa < 4){
-                    list.insertLast("Trampa");
+                    list.insertLast("Trampa", 1);
                     g.setColor(Color.RED);
                     g.drawString("Trampa", 160 * (i-1) + 30,100 * (j-1) + 70);
                     trampa++;
                 }else if(reto < 9){
-                    list.insertLast("Reto");
+                    list.insertLast("Reto", 2);
                     g.setColor(Color.orange);
                     g.drawString("Reto", 160 * (i-1) + 30,100 * (j-1) + 70);
                 }
@@ -40,7 +43,7 @@ public class GameWin extends JComponent{
                 g.drawOval(160 * (i-1) + 30,100 * (j-1) + 70, 140, 86);
             }
         }
-        list.display(); // shows data of each Node
+        //list.display(); // shows data of each Node
 
         ImageIcon bird = new ImageIcon(Objects.requireNonNull(getClass().getResource("bird.png")));
         g.drawImage(bird.getImage(), 700, 200, 100, 100, null);
@@ -50,8 +53,13 @@ public class GameWin extends JComponent{
 
     }
 
-    public static void main(String[] args){
-        //VENTANA DE JUEGO
+    public DoublyLinkedList getList(){
+        return this.list;
+    }
+    public GameWin getGameWin(){ return this;}
+
+    /**public static void main(String[] args){
+        /**VENTANA DE JUEGO
         JFrame win = new JFrame("Math Socket");
         GameWin imagenes = new GameWin();
         win.add(imagenes);
@@ -71,4 +79,4 @@ public class GameWin extends JComponent{
         dice.setBounds(800, 40, 100, 30);
         win.add(dice);
     }
-}
+}**/
