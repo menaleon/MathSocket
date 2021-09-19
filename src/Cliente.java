@@ -3,22 +3,25 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class Cliente{
+public class Cliente extends Thread{
     //Atributos de la Clase Cliente.
     private static Cliente instancia = null; //Creación de variable para patrón de diseño singleton.
     public int PUERTO = 5000;  //Puerto al que se va a conectar el cliente.
     public String HOST = "LocalHost";  // Dirección del host al que se va a conectar el cliente.
     public int gameState = 0; // Estado de Juego (Encendido o Apagado)
-    public String nombreJugador; // Nombre del Jugador
+    public String nombreJugador2; // Nombre del Jugador
 
     /*
     * Función que en primer lugar conecta al cliente en el puerto del server, intercambia mensajes con el
     * servidor de información del juego hasta que alguno de los jugadores gana. Luego cierra la comunicación
     */
-    public void conectarServer(){
+    //public void conectarServer(){ @Override
+    public void run() {
         //Declaración de las variables usadas en la función.
         Socket socket;  // Variable que va a contener la conexión entre el cliente y el servidor.
         DataInputStream recibir;  // Variable que funciona para recibir mensajes del servidor.
@@ -75,6 +78,14 @@ public class Cliente{
         JLabel nombre = new JLabel("Escriba su nombre de jugador");
         nombre.setBounds(100,50, 200,30);
         JButton play = new JButton("Play");
+        play.addActionListener(new ActionListener(){
+            public void actionPerformed(ActionEvent e){
+                nombreJugador2 = username.getText();
+                System.out.println(nombreJugador2);
+                Cliente.getInstancia().start();
+                frame.setVisible(false);
+            }
+        });
         play.setBounds(140, 200,100,40);
         frame.add(play);
         frame.add(username);
@@ -86,7 +97,7 @@ public class Cliente{
 
     public static void main(String[] args) {
         // <----- Aquí se pondría la llamada a la función que inicia la interfaz de la sala de espera
-        Cliente.getInstancia().conectarServer();//Conseguir la instancia con el singleton de Server
-        //Cliente.getInstancia().interfazInicio();
+        //Cliente.getInstancia().conectarServer();//Conseguir la instancia con el singleton de Server
+        Cliente.getInstancia().interfazInicio();
     }
 }
