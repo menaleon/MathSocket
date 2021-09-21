@@ -1,4 +1,5 @@
 import javax.swing.*;
+import javax.swing.border.Border;
 import java.awt.*;
 import java.io.*;
 import java.net.Socket;
@@ -85,13 +86,54 @@ public class Cliente extends Thread{
     }
 
     public void interfazInicio(){
-        JFrame frame = new JFrame("Inicio");
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        //Configuración del Label con Imagen
+        JLabel mathimage = new JLabel();
+        Border borde = BorderFactory.createLineBorder(Color.green, 10);
+        ImageIcon mathsocket = new ImageIcon("imagenes/mathsocket.png");
+        mathimage.setIcon(mathsocket);
+        mathimage.setBorder(borde);
+        mathimage.setBounds(387,0,298,360);
+
+        // Configuracion del label del nombre del usuario
+        JLabel nombre1 = new JLabel("Escriba su nombre");
+        nombre1.setForeground(Color.black);
+        nombre1.setFont(new Font("Arial Rounded MT Bold", Font.BOLD , 20));
+        nombre1.setBounds(42,60, 300,40);
+        nombre1.setHorizontalAlignment(JLabel.CENTER);
+        nombre1.setHorizontalTextPosition(JLabel.CENTER);
+
+        JLabel nombre2 = new JLabel("de jugador");
+        nombre2.setForeground(Color.black);
+        nombre2.setFont(new Font("Arial Rounded MT Bold", Font.BOLD , 20));
+        nombre2.setBounds(42,80, 300,40);
+        nombre2.setHorizontalAlignment(JLabel.CENTER);
+        nombre2.setHorizontalTextPosition(JLabel.CENTER);
+
+        // Configuración del campo de texto
         JTextField username = new JTextField();
-        username.setBounds(90, 100, 200,20);
-        JLabel nombre = new JLabel("Escriba su nombre de jugador");
-        nombre.setBounds(100,50, 200,30);
-        JButton play = new JButton("Play");
+        username.setBounds(42, 130, 300,40);
+
+        //Configuración de la Imagen de Espera
+        ImageIcon esqueleto = new ImageIcon("imagenes/espera.png");
+        JLabel esperando = new JLabel();
+        esperando.setIcon(esqueleto);
+        esperando.setBounds(30,3,304,350);
+        esperando.setVisible(false);
+
+        //Configuración del Frame del Inicio
+        JFrame frame = new JFrame();
+        frame.setTitle("MathSocket");
+        frame.setSize(700, 400);
+        frame.setResizable(false);
+        frame.setVisible(true);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        ImageIcon image = new ImageIcon("imagenes/logo.png");
+        frame.setIconImage(image.getImage());
+        frame.getContentPane().setBackground(Color.lightGray);
+        frame.setLayout(null);
+
+        // Configuración del Botón de Jugar
+        JButton play = new JButton("Jugar");
         play.addActionListener(new ActionListener(){
             public void actionPerformed(ActionEvent e){
                 nombreJugador2 = username.getText();
@@ -100,13 +142,17 @@ public class Cliente extends Thread{
                 frame.setVisible(false);
             }
         });
-        play.setBounds(140, 200,100,40);
-        frame.add(play);
+        play.setHorizontalTextPosition(0);
+        play.setBounds(70, 220,250,60);
+
+
+        // Agregar los componentes al frame
+        frame.add(mathimage);
         frame.add(username);
-        frame.add(nombre);
-        frame.setSize(400,400);
-        frame.setLayout(null);
-        frame.setVisible(true);
+        frame.add(nombre1);
+        frame.add(nombre2);
+        frame.add(play);
+        frame.add(esperando);
     }
 
     public static void main(String[] args) {
