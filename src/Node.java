@@ -1,8 +1,9 @@
 import java.io.Serializable;
 
 public class Node implements Serializable {
+    private int cType;
     public Object data; // tipo de casilla representado por un String
-    public int cType; // tipo de casilla representado por un entero
+    //public int cType; // tipo de casilla representado por un entero
     public Node prev;
     public Node next;
 
@@ -17,7 +18,9 @@ public class Node implements Serializable {
         return this.data;
     }
 
-    public int getcType(){ return this.cType;}
+    public int getcType(){
+        return this.cType;
+    }
 
     public void setData(Object data) {
         this.data = data;
