@@ -5,8 +5,6 @@ import java.io.*;
 import java.net.Socket;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class Cliente extends Thread{
     //Atributos de la Clase Cliente.
@@ -65,7 +63,7 @@ public class Cliente extends Thread{
             // <---- Aquí iria la función que me termina el juego
 
         } catch (IOException | ClassNotFoundException ex) { //Excepción al no poder conectarse al servidor en el puerto indicado o un fallo en la conexión
-            Logger.getLogger(Cliente.class.getName()).log(Level.SEVERE, null, ex);
+            JOptionPane.showMessageDialog(null,"No hay salas de juego disponibles, reinicia el cliente");
         }
     }
 
@@ -118,7 +116,7 @@ public class Cliente extends Thread{
 
         //Configuración del Frame del Inicio
         JFrame frame = new JFrame();
-        frame.setTitle("MathSocket");
+        frame.setTitle("MathSocket - Cliente");
         frame.setSize(700, 400);
         frame.setResizable(false);
         frame.setVisible(true);

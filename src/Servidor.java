@@ -9,9 +9,6 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import java.util.Random;
 
 public class Servidor extends Thread{
     //Atributos de la Clase Servidor
@@ -32,7 +29,6 @@ public class Servidor extends Thread{
     public void run() {
         //Declaración de las variables usadas en la función.
         tablero = new DoublyLinkedList();
-        gameFrame = new InterfazJuego(tablero);
         ServerSocket servidor; // Variable en donde se guarda el servidor que usaremos.
         Socket socket; // Variable que va a contener la conexión entre el cliente y el servidor.
 
@@ -47,13 +43,13 @@ public class Servidor extends Thread{
             servidor = new ServerSocket(PUERTO); // Inicio del Servidor
             System.out.println("Servidor Iniciado");
             socket = servidor.accept(); // un cliente ya se conectó
-
-
+            gameFrame = new InterfazJuego(tablero);
+            frame.setVisible(false);
             // Canal para enviar el tablero en el socket. Sólo debe ejecutarse una vez, por eso va afuera del While
             enviarTablero = new ObjectOutputStream(socket.getOutputStream());
             enviarTablero.writeObject(tablero); // el tablero es una lista, es decir, aquí se envía una lista**/
 
-            while(true){ // Se queda a la espera de que un  cliente se conecte
+            while(true){ // Se queda a la espera de que un cliente se conecte
 
                 // Canales para enviar y recibir
                 recibir = new DataInputStream(socket.getInputStream());
@@ -78,7 +74,7 @@ public class Servidor extends Thread{
                 socket.close();
             }
         } catch (IOException ex){ //Excepción al no poder crear el servidor en el puerto indicado o un fallo en la conexión.
-            Logger.getLogger(Servidor.class.getName()).log(Level.SEVERE, null, ex);
+            JOptionPane.showMessageDialog(null,"No se pudo iniciar el servidor correctamente, reinicia la aplicación");
         }
     }
 
@@ -151,8 +147,8 @@ public class Servidor extends Thread{
         play.setBounds(70, 220,250,60);
 
         //Configuración del Frame del Inicio
-        JFrame frame = new JFrame();
-        frame.setTitle("Hello Server");
+        frame = new JFrame();
+        frame.setTitle("MathSocket - Servidor");
         frame.setSize(700, 400);
         frame.setResizable(false);
         frame.setVisible(true);
