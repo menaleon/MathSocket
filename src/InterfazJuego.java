@@ -1,5 +1,7 @@
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 public class InterfazJuego{
     int trampa = 0;
@@ -8,6 +10,7 @@ public class InterfazJuego{
     JFrame frame;
     DoublyLinkedList copy;
     JButton [][] matriz;
+    JButton dado;
 
     int x = 10; // Coordenada x variable para cada botón en la matriz
     int y = 10; // Coordenada y variable para botón en la matriz
@@ -28,6 +31,16 @@ public class InterfazJuego{
         frame.setVisible(true);
         frame.setLayout(null);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        
+        //Dado
+        dado = new JButton("Tirar dado");
+        dado.setBounds(550, 200, 100, 50);
+        frame.add(dado);
+        dado.addActionListener(new ActionListener(){
+            public void actionPerformed(ActionEvent e){
+                Dado.getInstancia().Tirar();
+            }
+        });
 
         //Casillas del tablero
         matriz = new JButton[filas][columnas];
@@ -62,6 +75,8 @@ public class InterfazJuego{
             x = 10;
             y += 130;
         }
+        
+        SwingUtilities.updateComponentTreeUI(frame);
     }
 
     public DoublyLinkedList getList(){
