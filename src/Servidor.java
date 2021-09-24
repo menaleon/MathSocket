@@ -151,7 +151,6 @@ public class Servidor extends Thread{
         frame.setTitle("MathSocket - Servidor");
         frame.setSize(700, 400);
         frame.setResizable(false);
-        frame.setVisible(true);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         ImageIcon image = new ImageIcon("imagenes/logo.png");
         frame.setIconImage(image.getImage());
@@ -165,6 +164,7 @@ public class Servidor extends Thread{
         frame.add(nombre2);
         frame.add(play);
         frame.add(esperando);
+        frame.setVisible(true);
     }
 
     public static void main(String[] args) {
