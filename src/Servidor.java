@@ -4,21 +4,26 @@ import java.awt.*;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.Random;
 
 public class Servidor extends Thread{
     //Atributos de la Clase Servidor
-    private static Servidor instancia = null; // Creación de variable para patrón de diseño singleton.
+    public static Servidor instancia = null; // Creación de variable para patrón de diseño singleton.
     public int PUERTO = 5000; // Puerto en el que se va a crear el servidor.
     public int gameState = 0; // Estado de Juego (Encendido o Apagado)
     public String nombreJugador1; // Nombre del Jugador
     public JFrame frame;
     InterfazJuego gameFrame;
     DoublyLinkedList tablero;
+    Mensaje mensaje;
 
     /*
      * Función que en primer lugar crea el servidor en el puerto escogido, luego intercambia mensajes con el
@@ -29,15 +34,14 @@ public class Servidor extends Thread{
     public void run() {
         //Declaración de las variables usadas en la función.
         tablero = new DoublyLinkedList();
+        Dado dado = new Dado();
         ServerSocket servidor; // Variable en donde se guarda el servidor que usaremos.
         Socket socket; // Variable que va a contener la conexión entre el cliente y el servidor.
 
         DataInputStream recibir; // Variable que funciona para recibir mensajes del cliente.
         DataOutputStream enviar; // Variable que funciona para enviar mensajes hacia el servidor.
         ObjectOutputStream enviarTablero; // Variable que funciona para enviar el tablero al cliente.
-
-        String mensaje; // variable donde se guarda el mensaje escrito por el usuario.
-        String recibo;  // variable donde se guarda el mensaje recibido por el cliente.
+        ObjectInputStream recibirTablero;
 
         try {
             servidor = new ServerSocket(PUERTO); // Inicio del Servidor
@@ -45,15 +49,19 @@ public class Servidor extends Thread{
             socket = servidor.accept(); // un cliente ya se conectó
             gameFrame = new InterfazJuego(tablero);
             frame.setVisible(false);
+            mensaje = new Mensaje(tablero, false, false);
             // Canal para enviar el tablero en el socket. Sólo debe ejecutarse una vez, por eso va afuera del While
             enviarTablero = new ObjectOutputStream(socket.getOutputStream());
-            enviarTablero.writeObject(tablero); // el tablero es una lista, es decir, aquí se envía una lista**/
+            enviarTablero.writeObject(mensaje); // el tablero es una lista, es decir, aquí se envía una lista**/
 
-            while(true){ // Se queda a la espera de que un cliente se conecte
+            while(true){ // Se queda a la espera de que un  cliente se conecte
 
                 // Canales para enviar y recibir
-                recibir = new DataInputStream(socket.getInputStream());
-                enviar = new DataOutputStream(socket.getOutputStream());
+                //recibir = new DataInputStream(socket.getInputStream());
+                //enviar = new DataOutputStream(socket.getOutputStream());
+                enviarTablero = new ObjectOutputStream(socket.getOutputStream());
+                recibirTablero = new ObjectInputStream(socket.getInputStream());
+
 
                 gameState = 1;
                 //  <------ Aquí se colocaría el llamado a la función que inicia la interfaz del juego
@@ -151,6 +159,7 @@ public class Servidor extends Thread{
         frame.setTitle("MathSocket - Servidor");
         frame.setSize(700, 400);
         frame.setResizable(false);
+        frame.setVisible(true);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         ImageIcon image = new ImageIcon("imagenes/logo.png");
         frame.setIconImage(image.getImage());
@@ -164,7 +173,6 @@ public class Servidor extends Thread{
         frame.add(nombre2);
         frame.add(play);
         frame.add(esperando);
-        frame.setVisible(true);
     }
 
     public static void main(String[] args) {

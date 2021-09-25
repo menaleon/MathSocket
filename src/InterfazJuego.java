@@ -9,7 +9,7 @@ public class InterfazJuego{
 
     JFrame frame;
     DoublyLinkedList copy;
-    JButton [][] matriz;
+    JLabel [][] matriz;
     JButton dado;
 
     int x = 10; // Coordenada x variable para cada botón en la matriz
@@ -42,16 +42,28 @@ public class InterfazJuego{
             }
         });
 
+        //Jugadores
+        ImageIcon J1 = new ImageIcon("imagenes/J1.png");
+        ImageIcon J2 = new ImageIcon("imagenes/J2.png");
+        JLabel ficha1 = new JLabel();
+        JLabel ficha2 = new JLabel();
+        ficha1.setBounds(550, 100, 30, 30);
+        ficha2.setBounds(550, 500, 30, 30);
+        ficha1.setIcon(J1);
+        ficha2.setIcon(J2);
+        frame.add(ficha1);
+        frame.add(ficha2);
+
         //Casillas del tablero
-        matriz = new JButton[filas][columnas];
+        matriz = new JLabel[filas][columnas];
 
         ImageIcon casilla = new ImageIcon("imagenes/hexagon.png");
-
+        
         for (int i=0; i<filas; i++){
             for (int j=0; j<columnas; j++){
 
-                matriz[i][j] = new JButton();
-                matriz[i][j].setBounds(x, y, 80, 80);
+                matriz[i][j] = new JLabel();
+                matriz[i][j].setBounds(x, y, 90, 80);
 
                 tipoCasilla = copy.show(elemento);
 
@@ -67,7 +79,7 @@ public class InterfazJuego{
 
                 matriz[i][j].setIcon(casilla);
                 frame.add(matriz[i][j]);
-                matriz[i][j].setVisible(true);
+                //matriz[i][j].setVisible(true);
 
                 x += 130;
                 elemento++;

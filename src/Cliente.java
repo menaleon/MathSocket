@@ -15,6 +15,7 @@ public class Cliente extends Thread{
     public String nombreJugador2; // Nombre del Jugador
     InterfazJuego gameFrame;
     public DoublyLinkedList tableroRecibido;
+    Mensaje mensaje;
 
     /*
     * Función que en primer lugar conecta al cliente en el puerto del server, intercambia mensajes con el
@@ -25,10 +26,10 @@ public class Cliente extends Thread{
     public void run() {
         //Declaración de las variables usadas en la función.
         Socket socket;  // Variable que va a contener la conexión entre el cliente y el servidor.
-        DataInputStream recibir;  // Variable que funciona para recibir mensajes del servidor.
-        DataOutputStream enviar;  // Variable que funciona para enviar mensajes hacia el servidor.
-        String mensaje; // variable donde se guarda el mensaje escrito por el usuario.
-        String recibo; // variable donde se guarda el mensaje recibido por el servidor.
+        //DataInputStream recibir;  // Variable que funciona para recibir mensajes del servidor.
+        //DataOutputStream enviar;  // Variable que funciona para enviar mensajes hacia el servidor.
+        //String mensaje; // variable donde se guarda el mensaje escrito por el usuario.
+        //String recibo; // variable donde se guarda el mensaje recibido por el servidor.
 
         try {
             socket = new Socket (HOST, PUERTO); // Conexión al servidor
@@ -37,13 +38,15 @@ public class Cliente extends Thread{
             System.out.println("Cliente Conectado");
 
             // Canales para enviar y recibir
-            ObjectInputStream tablero = new ObjectInputStream(socket.getInputStream());
+            ObjectInputStream recibir = new ObjectInputStream(socket.getInputStream());
+            //ObjectOutputStream enviar = new ObjectOutputStream(socket.getOutputStream());
 
-            recibir = new DataInputStream(socket.getInputStream());
-            enviar = new DataOutputStream(socket.getOutputStream());
+            //recibir = new DataInputStream(socket.getInputStream());
+            //enviar = new DataOutputStream(socket.getOutputStream());
 
             // VENTANA DE JUEGO
-            tableroRecibido = (DoublyLinkedList) tablero.readObject();
+            mensaje = (Mensaje) recibir.readObject();
+            tableroRecibido = (DoublyLinkedList) mensaje.getTablero();
             gameFrame = new InterfazJuego(tableroRecibido);
 
 
@@ -137,7 +140,6 @@ public class Cliente extends Thread{
         });
         play.setHorizontalTextPosition(0);
         play.setBounds(70, 220,250,60);
-
 
         // Agregar los componentes al frame
         frame.add(mathimage);
