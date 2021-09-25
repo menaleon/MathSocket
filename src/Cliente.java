@@ -14,7 +14,9 @@ public class Cliente extends Thread{
     public int gameState = 0; // Estado de Juego (Encendido o Apagado)
     public String nombreJugador2; // Nombre del Jugador
     InterfazJuego gameFrame;
-    public DoublyLinkedList tableroRecibido;
+    public DoublyLinkedList tablero;
+    Boolean stateDado;
+    Boolean reto;
     Mensaje mensaje;
 
     /*
@@ -26,10 +28,6 @@ public class Cliente extends Thread{
     public void run() {
         //Declaración de las variables usadas en la función.
         Socket socket;  // Variable que va a contener la conexión entre el cliente y el servidor.
-        //DataInputStream recibir;  // Variable que funciona para recibir mensajes del servidor.
-        //DataOutputStream enviar;  // Variable que funciona para enviar mensajes hacia el servidor.
-        //String mensaje; // variable donde se guarda el mensaje escrito por el usuario.
-        //String recibo; // variable donde se guarda el mensaje recibido por el servidor.
 
         try {
             socket = new Socket (HOST, PUERTO); // Conexión al servidor
@@ -46,27 +44,18 @@ public class Cliente extends Thread{
 
             // VENTANA DE JUEGO
             mensaje = (Mensaje) recibir.readObject();
-            tableroRecibido = (DoublyLinkedList) mensaje.getTablero();
-            gameFrame = new InterfazJuego(tableroRecibido);
+            tablero = mensaje.getTablero();
+            stateDado = mensaje.getDado();
+            reto = mensaje.getReto();
+            gameFrame = new InterfazJuego(tablero, 2);
+            //gameFrame.setVisibleDado(stateDado);
 
-
-            //while(gameState != 0){ // Aquí se hace un ciclo para poder enviar y recibir mensajes indefinidamente hasta que el juego se acabe
-
-                // Sección que recibe el mensaje del Servidor y lo interpreta.
-                //recibo = recibir.readUTF();
-                //System.out.println(recibo);
-                // ⇦ Aquí se pondría la función para interpretar el mensaje.
-
-                // Sección que envía los mensajes al servidor
-                //mensaje = JOptionPane.showInputDialog("Mensaje desde Cliente para server");
-                //enviar.writeUTF(mensaje);
-            //
 
             socket.close();
             // <---- Aquí iria la función que me termina el juego
 
         } catch (IOException | ClassNotFoundException ex) { //Excepción al no poder conectarse al servidor en el puerto indicado o un fallo en la conexión
-            JOptionPane.showMessageDialog(null,"No hay salas de juego disponibles, reinicia el cliente");
+            JOptionPane.showMessageDialog(null,"No hay salas de juego disponibles, reinicia el cliente:\n" + ex.toString());
         }
     }
 

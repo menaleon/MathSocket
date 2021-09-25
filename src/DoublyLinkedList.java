@@ -23,7 +23,7 @@ public class DoublyLinkedList implements Serializable { // Atributes: head (inic
         this.size = 0;
 
         // Generación de elementos. Es aleatoria y diferente cada vez que se ejecute el Servidor, pero se envía una copia en Cliente
-        for(int i=0; i<17; i++){
+        for(int i=0; i<16; i++){
             tipoCasilla = random.nextInt(3);
             if(tipoCasilla == 0 && tunel < 4){
                 insertLast("Tunel", 0);
@@ -35,6 +35,8 @@ public class DoublyLinkedList implements Serializable { // Atributes: head (inic
                 insertLast("Reto", 2);
                 reto++;
             }
+            System.out.println(i);
+            System.out.println(this.size);
         }
     }
 

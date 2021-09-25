@@ -1,13 +1,17 @@
-public class Mensaje{
+import java.io.Serializable;
+
+public class Mensaje implements Serializable{
 
     DoublyLinkedList tablero;
     Boolean dado;
-    Boolean respuesta;
+    Boolean reto;
+    int posicion;
 
-    public Mensaje (DoublyLinkedList tablero, Boolean dado, Boolean respuesta){
+    public Mensaje (DoublyLinkedList tablero, Boolean dado, Boolean reto, int posicion){
         this.tablero = tablero;
         this.dado = dado;
-        this.respuesta = respuesta;
+        this.reto = reto;
+        this.posicion = posicion;
     }
 
     public Boolean getDado(){
@@ -18,7 +22,7 @@ public class Mensaje{
         return this.tablero;
     }
 
-    public Boolean getRespuesta(){
-        return this.respuesta;
+    public Boolean getReto(){
+        return this.reto;
     }
 }

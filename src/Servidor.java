@@ -10,9 +10,6 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import java.util.Random;
 
 public class Servidor extends Thread{
     //Atributos de la Clase Servidor
@@ -21,6 +18,7 @@ public class Servidor extends Thread{
     public int gameState = 0; // Estado de Juego (Encendido o Apagado)
     public String nombreJugador1; // Nombre del Jugador
     public JFrame frame;
+    Dado dado = new Dado();
     InterfazJuego gameFrame;
     DoublyLinkedList tablero;
     Mensaje mensaje;
@@ -34,58 +32,33 @@ public class Servidor extends Thread{
     public void run() {
         //Declaración de las variables usadas en la función.
         tablero = new DoublyLinkedList();
-        Dado dado = new Dado();
         ServerSocket servidor; // Variable en donde se guarda el servidor que usaremos.
         Socket socket; // Variable que va a contener la conexión entre el cliente y el servidor.
 
-        DataInputStream recibir; // Variable que funciona para recibir mensajes del cliente.
-        DataOutputStream enviar; // Variable que funciona para enviar mensajes hacia el servidor.
-        ObjectOutputStream enviarTablero; // Variable que funciona para enviar el tablero al cliente.
-        ObjectInputStream recibirTablero;
+        ObjectOutputStream enviar; // Variable que funciona para enviar el tablero al cliente.
+        ObjectInputStream recibir;
 
         try {
             servidor = new ServerSocket(PUERTO); // Inicio del Servidor
             System.out.println("Servidor Iniciado");
             socket = servidor.accept(); // un cliente ya se conectó
-            gameFrame = new InterfazJuego(tablero);
+            gameFrame = new InterfazJuego(tablero, 1);
             frame.setVisible(false);
-            mensaje = new Mensaje(tablero, false, false);
+            mensaje = new Mensaje(tablero, false, false, 0);
             // Canal para enviar el tablero en el socket. Sólo debe ejecutarse una vez, por eso va afuera del While
-            enviarTablero = new ObjectOutputStream(socket.getOutputStream());
-            enviarTablero.writeObject(mensaje); // el tablero es una lista, es decir, aquí se envía una lista**/
+            enviar = new ObjectOutputStream(socket.getOutputStream());
+            enviar.writeObject(mensaje); // el tablero es una lista, es decir, aquí se envía una lista**/
 
-            while(true){ // Se queda a la espera de que un  cliente se conecte
+            //recibir = new ObjectInputStream(socket.getInputStream());
 
-                // Canales para enviar y recibir
-                //recibir = new DataInputStream(socket.getInputStream());
-                //enviar = new DataOutputStream(socket.getOutputStream());
-                enviarTablero = new ObjectOutputStream(socket.getOutputStream());
-                recibirTablero = new ObjectInputStream(socket.getInputStream());
+            gameState = 1;
+    
+            socket.close();
 
-
-                gameState = 1;
-                //  <------ Aquí se colocaría el llamado a la función que inicia la interfaz del juego
-
-                while(gameState!=0){ // Aquí se hace un ciclo para poder enviar y recibir mensajes indefinidamente hasta que el juego se acabe
-
-                    // Sección que envía los mensajes al cliente
-                    //mensaje = JOptionPane.showInputDialog("Mensaje desde Server para el Cliente");
-                    //enviar.writeUTF(mensaje);
-
-                    // Sección que recibe el mensaje del Cliente y lo interpreta.
-                    //recibo = recibir.readUTF();
-                    //System.out.println(recibo);
-                    // <-- Aquí se pondría la función para interpretar el mensaje.
-
-                }
-                // <---- Aquí iria la función que me termina el juego.
-                socket.close();
-            }
         } catch (IOException ex){ //Excepción al no poder crear el servidor en el puerto indicado o un fallo en la conexión.
-            JOptionPane.showMessageDialog(null,"No se pudo iniciar el servidor correctamente, reinicia la aplicación");
+            JOptionPane.showMessageDialog(null,"No se pudo iniciar el servidor correctamente, reinicia la aplicación:\n" + ex.toString());
         }
     }
-
 
     /*
     * Función del patrón de Diseño Singleton.
