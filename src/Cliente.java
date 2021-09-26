@@ -2,6 +2,7 @@ import javax.swing.*;
 import javax.swing.border.Border;
 import java.awt.*;
 import java.io.*;
+import java.net.ServerSocket;
 import java.net.Socket;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -30,31 +31,49 @@ public class Cliente extends Thread{
         Socket socket;  // Variable que va a contener la conexión entre el cliente y el servidor.
 
         try {
-            socket = new Socket (HOST, PUERTO); // Conexión al servidor
+            // Conexión al servidor
+            socket = new Socket (HOST, PUERTO);
+
             gameState = 1;
-            //  <------ Aquí se colocaría el llamado a la función que inicia la interfaz del juego
             System.out.println("Cliente Conectado");
 
-            // Canales para enviar y recibir
-            ObjectInputStream recibir = new ObjectInputStream(socket.getInputStream());
-            //ObjectOutputStream enviar = new ObjectOutputStream(socket.getOutputStream());
-
-            //recibir = new DataInputStream(socket.getInputStream());
-            //enviar = new DataOutputStream(socket.getOutputStream());
+            // Canales para enviar y recibir objetos por socket
+            ObjectInputStream recibirMensaje = new ObjectInputStream(socket.getInputStream());
+            ObjectOutputStream enviarNuevasPos = new ObjectOutputStream(socket.getOutputStream());
 
             // VENTANA DE JUEGO
-            mensaje = (Mensaje) recibir.readObject();
+            mensaje = (Mensaje) recibirMensaje.readObject();
             tablero = mensaje.getTablero();
             stateDado = mensaje.getDado();
             reto = mensaje.getReto();
             gameFrame = new InterfazJuego(tablero, 2);
             //gameFrame.setVisibleDado(stateDado);
 
+            //ObjectOutputStream enviarPosClient = new ObjectOutputStream(socket2.getOutputStream());
+            ObjectInputStream recibirNuevasPos = new ObjectInputStream(socket.getInputStream());
+            NewPosition nuevasPosServer;
+
+            while(gameState != 0){
+
+                //Enviar coordenadas de fichaCliente al server. NO SIRVE
+                /**int posXClient = Cliente.getInstancia().gameFrame.getPosXficha2();
+                int posYClient = Cliente.getInstancia().gameFrame.getPosYficha2();
+                NewPosition newPosClient = new NewPosition(2, posXClient, posYClient);
+                //enviarPosClient.writeObject(newPosClient);**/
+
+
+                //Recibir, leer y actualizar coordenadas de fichaServer
+                nuevasPosServer = (NewPosition) recibirNuevasPos.readObject(); //lee el objeto
+                int x = nuevasPosServer.getNuevaX();
+                int y = nuevasPosServer.getNuevaY();
+                Cliente.getInstancia().gameFrame.getFicha1().setBounds(x,y,30,30); // actualiza ventana del cliente
+            }
 
             socket.close();
             // <---- Aquí iria la función que me termina el juego
 
         } catch (IOException | ClassNotFoundException ex) { //Excepción al no poder conectarse al servidor en el puerto indicado o un fallo en la conexión
+            //ex.printStackTrace();
             JOptionPane.showMessageDialog(null,"No hay salas de juego disponibles, reinicia el cliente:\n" + ex.toString());
         }
     }

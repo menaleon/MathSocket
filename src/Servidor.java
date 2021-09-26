@@ -12,15 +12,17 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 public class Servidor extends Thread{
+
     //Atributos de la Clase Servidor
-    public static Servidor instancia = null; // Creación de variable para patrón de diseño singleton.
-    public int PUERTO = 5000; // Puerto en el que se va a crear el servidor.
+    public static Servidor instancia = null; // Creación de variable para patrón de diseño singleton
+    public int PUERTO = 5000; // Puerto en el que se va a crear el servidor
+    public int PUERTO2 = 9090;
     public int gameState = 0; // Estado de Juego (Encendido o Apagado)
     public String nombreJugador1; // Nombre del Jugador
     public JFrame frame;
+    DoublyLinkedList tablero; //= new DoublyLinkedList();
+    InterfazJuego gameFrame; //= new InterfazJuego(tablero, 1);
     Dado dado = new Dado();
-    InterfazJuego gameFrame;
-    DoublyLinkedList tablero;
     Mensaje mensaje;
 
     /*
@@ -31,31 +33,54 @@ public class Servidor extends Thread{
     @Override
     public void run() {
         //Declaración de las variables usadas en la función.
-        tablero = new DoublyLinkedList();
+        //tablero = new DoublyLinkedList();
         ServerSocket servidor; // Variable en donde se guarda el servidor que usaremos.
         Socket socket; // Variable que va a contener la conexión entre el cliente y el servidor.
-
         ObjectOutputStream enviar; // Variable que funciona para enviar el tablero al cliente.
-        ObjectInputStream recibir;
+        ObjectOutputStream enviarPosServer;
 
         try {
-            servidor = new ServerSocket(PUERTO); // Inicio del Servidor
+            servidor = new ServerSocket(PUERTO);       // Inicio del Servidor
             System.out.println("Servidor Iniciado");
-            socket = servidor.accept(); // un cliente ya se conectó
+            socket = servidor.accept();               // Un cliente ya se conectó
+            tablero = new DoublyLinkedList();
             gameFrame = new InterfazJuego(tablero, 1);
             frame.setVisible(false);
-            mensaje = new Mensaje(tablero, false, false, 0);
-            // Canal para enviar el tablero en el socket. Sólo debe ejecutarse una vez, por eso va afuera del While
-            enviar = new ObjectOutputStream(socket.getOutputStream());
-            enviar.writeObject(mensaje); // el tablero es una lista, es decir, aquí se envía una lista**/
-
-            //recibir = new ObjectInputStream(socket.getInputStream());
-
             gameState = 1;
-    
+
+            mensaje = new Mensaje(tablero, false, false, 0);
+
+            // Canales para enviar y recibir objetos por socket
+            enviar = new ObjectOutputStream(socket.getOutputStream());
+            enviar.writeObject(mensaje); // el objeto mensaje contiene el tablero = lista
+            enviarPosServer = new ObjectOutputStream(socket.getOutputStream());
+
+            ObjectInputStream recibirPosCliente = new ObjectInputStream(socket.getInputStream());
+            NewPosition nuevasPosClient;
+
+            while(gameState != 0){
+
+                //Enviar coordenadas de fichaServer al cliente
+                int posXServer = Servidor.getInstancia().gameFrame.getPosXficha1();
+                int posYServer = Servidor.getInstancia().gameFrame.getPosYficha1();
+                NewPosition newPosServer = new NewPosition(1, posXServer,posYServer); //Objeto a enviar
+                enviarPosServer.writeObject(newPosServer); //Se envía el objeto
+
+                //Recibir, leer y actualizar coordenadas de fichaCLiente. NO SIRVE
+                /**nuevasPosClient = (NewPosition) recibirPosCliente.readObject();
+                int x = nuevasPosClient.getNuevaX();
+                int y = nuevasPosClient.getNuevaY();
+                 Servidor.getInstancia().gameFrame.getFicha2().setBounds(x, y, 30, 30);
+                //System.out.println("NewposCLient X: " + x + " Y: " + y);**/
+
+
+            }
             socket.close();
 
-        } catch (IOException ex){ //Excepción al no poder crear el servidor en el puerto indicado o un fallo en la conexión.
+            // | ClassNotFoundException ex
+
+        } catch (IOException ex ){ //Excepción al no poder crear el servidor en el puerto indicado o un fallo en la conexión.
+            //ex.printStackTrace();
             JOptionPane.showMessageDialog(null,"No se pudo iniciar el servidor correctamente, reinicia la aplicación:\n" + ex.toString());
         }
     }
@@ -146,11 +171,12 @@ public class Servidor extends Thread{
         frame.add(nombre2);
         frame.add(play);
         frame.add(esperando);
+
+        SwingUtilities.updateComponentTreeUI(frame);
     }
 
     public static void main(String[] args) {
-        // <----- Aquí se pondría la llamada a la función que inicia la interfaz de la sala de espera.
-        //Servidor.getInstancia().iniciarServer(); //Conseguir la instancia con el singleton de Server.
         Servidor.getInstancia().interfazInicio();
+
     }
 }
