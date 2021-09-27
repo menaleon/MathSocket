@@ -2,7 +2,6 @@ import javax.swing.*;
 import javax.swing.border.Border;
 import java.awt.*;
 import java.io.*;
-import java.net.ServerSocket;
 import java.net.Socket;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -33,42 +32,40 @@ public class Cliente extends Thread{
         try {
             // Conexión al servidor
             socket = new Socket (HOST, PUERTO);
-
             gameState = 1;
             System.out.println("Cliente Conectado");
-
             // Canales para enviar y recibir objetos por socket
-            ObjectInputStream recibirMensaje = new ObjectInputStream(socket.getInputStream());
-            ObjectOutputStream enviarNuevasPos = new ObjectOutputStream(socket.getOutputStream());
-
+            ObjectInputStream recibir = new ObjectInputStream(socket.getInputStream());
+            ObjectOutputStream enviar = new ObjectOutputStream(socket.getOutputStream());
             // VENTANA DE JUEGO
-            mensaje = (Mensaje) recibirMensaje.readObject();
+            mensaje = (Mensaje) recibir.readObject();
             tablero = mensaje.getTablero();
             stateDado = mensaje.getDado();
             reto = mensaje.getReto();
             gameFrame = new InterfazJuego(tablero, 2);
             //gameFrame.setVisibleDado(stateDado);
-
             //ObjectOutputStream enviarPosClient = new ObjectOutputStream(socket2.getOutputStream());
-            ObjectInputStream recibirNuevasPos = new ObjectInputStream(socket.getInputStream());
-            NewPosition nuevasPosServer;
-
+            //NewPosition nuevasPosServer;
             while(gameState != 0){
-
                 //Enviar coordenadas de fichaCliente al server. NO SIRVE
                 /**int posXClient = Cliente.getInstancia().gameFrame.getPosXficha2();
                 int posYClient = Cliente.getInstancia().gameFrame.getPosYficha2();
                 NewPosition newPosClient = new NewPosition(2, posXClient, posYClient);
                 //enviarPosClient.writeObject(newPosClient);**/
-
-
                 //Recibir, leer y actualizar coordenadas de fichaServer
-                nuevasPosServer = (NewPosition) recibirNuevasPos.readObject(); //lee el objeto
-                int x = nuevasPosServer.getNuevaX();
-                int y = nuevasPosServer.getNuevaY();
+                mensaje = (Mensaje) recibir.readObject(); //lee el objeto
+                int x = mensaje.getPosicionX();
+                int y = mensaje.getPosicionY();
                 Cliente.getInstancia().gameFrame.getFicha1().setBounds(x,y,30,30); // actualiza ventana del cliente
+                //////////////////////////////////////////////////////////////////
+                //Enviar coordenadas de fichaServer al cliente
+                
+                int posXCliente = Cliente.getInstancia().gameFrame.getPosXficha2();
+                int posYCliente = Cliente.getInstancia().gameFrame.getPosYficha2();
+                //NewPosition newPosServer = new NewPosition(1, posXServer,posYServer); //Objeto a enviar
+                mensaje = new Mensaje(null, true, false, posXCliente, posYCliente);
+                enviar.writeObject(mensaje); //Se envía el objeto
             }
-
             socket.close();
             // <---- Aquí iria la función que me termina el juego
 

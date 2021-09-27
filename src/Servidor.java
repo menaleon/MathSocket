@@ -1,8 +1,6 @@
 import javax.swing.*;
 import javax.swing.border.Border;
 import java.awt.*;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -16,7 +14,6 @@ public class Servidor extends Thread{
     //Atributos de la Clase Servidor
     public static Servidor instancia = null; // Creación de variable para patrón de diseño singleton
     public int PUERTO = 5000; // Puerto en el que se va a crear el servidor
-    public int PUERTO2 = 9090;
     public int gameState = 0; // Estado de Juego (Encendido o Apagado)
     public String nombreJugador1; // Nombre del Jugador
     public JFrame frame;
@@ -33,38 +30,45 @@ public class Servidor extends Thread{
     @Override
     public void run() {
         //Declaración de las variables usadas en la función.
-        //tablero = new DoublyLinkedList();
+        tablero = new DoublyLinkedList();
         ServerSocket servidor; // Variable en donde se guarda el servidor que usaremos.
         Socket socket; // Variable que va a contener la conexión entre el cliente y el servidor.
         ObjectOutputStream enviar; // Variable que funciona para enviar el tablero al cliente.
-        ObjectOutputStream enviarPosServer;
+        ObjectInputStream recibir;
 
         try {
             servidor = new ServerSocket(PUERTO);       // Inicio del Servidor
             System.out.println("Servidor Iniciado");
             socket = servidor.accept();               // Un cliente ya se conectó
-            tablero = new DoublyLinkedList();
+            //tablero = new DoublyLinkedList();
             gameFrame = new InterfazJuego(tablero, 1);
             frame.setVisible(false);
             gameState = 1;
 
-            mensaje = new Mensaje(tablero, false, false, 0);
+            mensaje = new Mensaje(tablero, false, false, 0, 0);
 
             // Canales para enviar y recibir objetos por socket
             enviar = new ObjectOutputStream(socket.getOutputStream());
             enviar.writeObject(mensaje); // el objeto mensaje contiene el tablero = lista
-            enviarPosServer = new ObjectOutputStream(socket.getOutputStream());
 
-            ObjectInputStream recibirPosCliente = new ObjectInputStream(socket.getInputStream());
-            NewPosition nuevasPosClient;
+            recibir = new ObjectInputStream(socket.getInputStream());
+            //NewPosition nuevasPosClient;
 
             while(gameState != 0){
 
                 //Enviar coordenadas de fichaServer al cliente
                 int posXServer = Servidor.getInstancia().gameFrame.getPosXficha1();
                 int posYServer = Servidor.getInstancia().gameFrame.getPosYficha1();
-                NewPosition newPosServer = new NewPosition(1, posXServer,posYServer); //Objeto a enviar
-                enviarPosServer.writeObject(newPosServer); //Se envía el objeto
+                //NewPosition newPosServer = new NewPosition(1, posXServer,posYServer); //Objeto a enviar
+                mensaje = new Mensaje(null, true, false, posXServer, posYServer);
+                enviar.writeObject(mensaje); //Se envía el objeto
+                ////////////////////////////////////////////////////////////////////////
+               
+                mensaje = (Mensaje) recibir.readObject();
+                int x = mensaje.getPosicionX();
+                int y = mensaje.getPosicionY();
+                Servidor.getInstancia().gameFrame.getFicha2().setBounds(x,y,30,30); // actualiza ventana del cliente
+                
 
                 //Recibir, leer y actualizar coordenadas de fichaCLiente. NO SIRVE
                 /**nuevasPosClient = (NewPosition) recibirPosCliente.readObject();
@@ -79,7 +83,7 @@ public class Servidor extends Thread{
 
             // | ClassNotFoundException ex
 
-        } catch (IOException ex ){ //Excepción al no poder crear el servidor en el puerto indicado o un fallo en la conexión.
+        } catch (IOException | ClassNotFoundException ex){ //Excepción al no poder crear el servidor en el puerto indicado o un fallo en la conexión.
             //ex.printStackTrace();
             JOptionPane.showMessageDialog(null,"No se pudo iniciar el servidor correctamente, reinicia la aplicación:\n" + ex.toString());
         }

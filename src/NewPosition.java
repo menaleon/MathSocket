@@ -1,3 +1,4 @@
+/**
 import java.io.Serializable;
 
 public class NewPosition implements Serializable {
@@ -23,3 +24,4 @@ public class NewPosition implements Serializable {
         return this.nuevaY;
     }
 }
+**/
