@@ -8,19 +8,18 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.concurrent.TimeUnit;
 
 public class Servidor extends Thread{
-
     //Atributos de la Clase Servidor
-    public static Servidor instancia = null; // Creación de variable para patrón de diseño singleton
-    public int PUERTO = 5000; // Puerto en el que se va a crear el servidor
-    public int gameState = 0; // Estado de Juego (Encendido o Apagado)
+    public static Servidor instancia = null; // Creación de variable para patrón de diseño singleton.
+    public int PUERTO = 5000; // Puerto en el que se va a crear el servidor.
+    public int gameState = 1; // Estado de Juego (Encendido o Apagado)
     public String nombreJugador1; // Nombre del Jugador
     public JFrame frame;
-    DoublyLinkedList tablero; //= new DoublyLinkedList();
-    InterfazJuego gameFrame; //= new InterfazJuego(tablero, 1);
     Dado dado = new Dado();
-    Mensaje mensaje;
+    InterfazJuego gameFrame;
+    DoublyLinkedList tablero;
 
     /*
      * Función que en primer lugar crea el servidor en el puerto escogido, luego intercambia mensajes con el
@@ -37,54 +36,37 @@ public class Servidor extends Thread{
         ObjectInputStream recibir;
 
         try {
-            servidor = new ServerSocket(PUERTO);       // Inicio del Servidor
+            servidor = new ServerSocket(PUERTO); // Inicio del Servidor
             System.out.println("Servidor Iniciado");
-            socket = servidor.accept();               // Un cliente ya se conectó
-            //tablero = new DoublyLinkedList();
+            socket = servidor.accept(); // un cliente ya se conectó
+            // Canal para enviar el tablero en el socket. Sólo debe ejecutarse una vez, por eso va afuera del While
+            enviar = new ObjectOutputStream(socket.getOutputStream());
+            recibir = new ObjectInputStream(socket.getInputStream());
             gameFrame = new InterfazJuego(tablero, 1);
             frame.setVisible(false);
-            gameState = 1;
-
-            mensaje = new Mensaje(tablero, false, false, 0, 0);
-
-            // Canales para enviar y recibir objetos por socket
-            enviar = new ObjectOutputStream(socket.getOutputStream());
-            enviar.writeObject(mensaje); // el objeto mensaje contiene el tablero = lista
-
-            recibir = new ObjectInputStream(socket.getInputStream());
-            //NewPosition nuevasPosClient;
-
-            while(gameState != 0){
-
-                //Enviar coordenadas de fichaServer al cliente
-                int posXServer = Servidor.getInstancia().gameFrame.getPosXficha1();
-                int posYServer = Servidor.getInstancia().gameFrame.getPosYficha1();
-                //NewPosition newPosServer = new NewPosition(1, posXServer,posYServer); //Objeto a enviar
-                mensaje = new Mensaje(null, true, false, posXServer, posYServer);
-                enviar.writeObject(mensaje); //Se envía el objeto
-                ////////////////////////////////////////////////////////////////////////
-               
-                mensaje = (Mensaje) recibir.readObject();
-                int x = mensaje.getPosicionX();
-                int y = mensaje.getPosicionY();
-                Servidor.getInstancia().gameFrame.getFicha2().setBounds(x,y,30,30); // actualiza ventana del cliente
-                
-
-                //Recibir, leer y actualizar coordenadas de fichaCLiente. NO SIRVE
-                /**nuevasPosClient = (NewPosition) recibirPosCliente.readObject();
-                int x = nuevasPosClient.getNuevaX();
-                int y = nuevasPosClient.getNuevaY();
-                 Servidor.getInstancia().gameFrame.getFicha2().setBounds(x, y, 30, 30);
-                //System.out.println("NewposCLient X: " + x + " Y: " + y);**/
-
-
+            Mensaje mensajeEnviado = new Mensaje(tablero, false, false, 0);
+            enviar.writeObject(mensajeEnviado); // el tablero es una lista, es decir, aquí se envía una lista**/
+            while(gameState != 0) {
+                if (Servidor.getInstancia().gameFrame.isVisibleDado())
+                {
+                    TimeUnit.MILLISECONDS.sleep(100);
+                    //Enviar coordenadas de fichaServer al cliente
+                    int posServer = Servidor.getInstancia().gameFrame.getPosFicha1();
+                    mensajeEnviado = new Mensaje(tablero, !Servidor.getInstancia().gameFrame.isVisibleDado(), false, posServer);
+                    enviar.writeObject(mensajeEnviado); //Se envía el objeto
+                } else 
+                {
+                    Mensaje mensajeRecibido = (Mensaje) recibir.readObject();
+                    Boolean stateDado = mensajeRecibido.getDado();
+                    Boolean reto = mensajeRecibido.getReto();
+                    int posFicha2 = mensajeRecibido.getPosicion();
+                    Servidor.getInstancia().gameFrame.setPosFicha2(posFicha2);
+                    gameFrame.setVisibleDado(stateDado);
+                    TimeUnit.MILLISECONDS.sleep(100);
+                }
             }
-            socket.close();
-
-            // | ClassNotFoundException ex
-
-        } catch (IOException | ClassNotFoundException ex){ //Excepción al no poder crear el servidor en el puerto indicado o un fallo en la conexión.
-            //ex.printStackTrace();
+           socket.close();
+        } catch (IOException | ClassNotFoundException | InterruptedException ex){ //Excepción al no poder crear el servidor en el puerto indicado o un fallo en la conexión.
             JOptionPane.showMessageDialog(null,"No se pudo iniciar el servidor correctamente, reinicia la aplicación:\n" + ex.toString());
         }
     }
@@ -120,14 +102,12 @@ public class Servidor extends Thread{
         nombre1.setBounds(42,60, 300,40);
         nombre1.setHorizontalAlignment(JLabel.CENTER);
         nombre1.setHorizontalTextPosition(JLabel.CENTER);
-
         JLabel nombre2 = new JLabel("de jugador");
         nombre2.setForeground(Color.black);
         nombre2.setFont(new Font("Arial Rounded MT Bold", Font.BOLD , 20));
         nombre2.setBounds(42,80, 300,40);
         nombre2.setHorizontalAlignment(JLabel.CENTER);
         nombre2.setHorizontalTextPosition(JLabel.CENTER);
-
         // Configuración del campo de texto
         JTextField username = new JTextField();
         username.setBounds(42, 130, 300,40);
@@ -155,7 +135,6 @@ public class Servidor extends Thread{
         });
         play.setHorizontalTextPosition(0);
         play.setBounds(70, 220,250,60);
-
         //Configuración del Frame del Inicio
         frame = new JFrame();
         frame.setTitle("MathSocket - Servidor");
@@ -167,20 +146,18 @@ public class Servidor extends Thread{
         frame.setIconImage(image.getImage());
         frame.getContentPane().setBackground(Color.lightGray);
         frame.setLayout(null);
-
-        // Agregar los componentes al frame
+       // Agregar los componentes al frame
         frame.add(mathimage);
         frame.add(username);
         frame.add(nombre1);
         frame.add(nombre2);
         frame.add(play);
         frame.add(esperando);
-
-        SwingUtilities.updateComponentTreeUI(frame);
     }
 
     public static void main(String[] args) {
+        // <----- Aquí se pondría la llamada a la función que inicia la interfaz de la sala de espera.
+        //Servidor.getInstancia().iniciarServer(); //Conseguir la instancia con el singleton de Server.
         Servidor.getInstancia().interfazInicio();
-
     }
 }

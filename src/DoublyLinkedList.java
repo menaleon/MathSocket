@@ -67,7 +67,6 @@ public class DoublyLinkedList implements Serializable { // Atributes: head (inic
         Node current = this.head;
         int cont = 0;
         while (current != null && cont < elemento){
-            System.out.println();
             current = current.next;
             cont++;
         }
