@@ -16,6 +16,8 @@ public class Cliente extends Thread{
     public String nombreJugador2; // Nombre del Jugador
     InterfazJuego gameFrame;
     public DoublyLinkedList tablero;
+    Boolean reto = false;
+    Boolean stateDado;
 
     /*
     * Función que en primer lugar conecta al cliente en el puerto del server, intercambia mensajes con el
@@ -42,7 +44,7 @@ public class Cliente extends Thread{
             // VENTANA DE JUEGO
             Mensaje mensajeRecibido = (Mensaje) recibir.readObject();
             tablero = mensajeRecibido.getTablero();
-            Boolean stateDado = mensajeRecibido.getDado();
+            stateDado = mensajeRecibido.getDado();
             Boolean reto = mensajeRecibido.getReto();
             gameFrame = new InterfazJuego(tablero, 2);
             gameFrame.setVisibleDado(stateDado);
@@ -53,16 +55,21 @@ public class Cliente extends Thread{
                     TimeUnit.MILLISECONDS.sleep(100);
                     //Enviar coordenadas de fichaCliente al servidor
                     int posCliente = Cliente.getInstancia().gameFrame.getPosFicha2();
-                    Mensaje mensajeEnviado = new Mensaje(tablero, !Cliente.getInstancia().gameFrame.isVisibleDado(), false, posCliente);
+                    Mensaje mensajeEnviado = new Mensaje(tablero, !Cliente.getInstancia().gameFrame.isVisibleDado(), reto, posCliente);
                     enviar.writeObject(mensajeEnviado); //Se envía el objeto
                 } else {
+                    TimeUnit.MILLISECONDS.sleep(100);
                     mensajeRecibido = (Mensaje) recibir.readObject();
                     stateDado = mensajeRecibido.getDado();
                     reto = mensajeRecibido.getReto();
                     int posFicha1 = mensajeRecibido.getPosicion();
                     Cliente.getInstancia().gameFrame.setPosFicha1(posFicha1);
                     gameFrame.setVisibleDado(stateDado);
-                    TimeUnit.MILLISECONDS.sleep(100);
+                    if (reto == true){
+                        gameFrame.generaReto(2);
+                        reto = false;
+                        mensajeRecibido.setReto();
+                    }
                 }
             }
             socket.close();

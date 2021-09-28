@@ -29,4 +29,11 @@ public class Mensaje implements Serializable{
     public int getPosicion(){
         return this.posicion;
     }
+
+    public void setReto(){
+        this.reto = false;
+    }
+    public void setDado(){
+        this.dado = false;
+    }
 }

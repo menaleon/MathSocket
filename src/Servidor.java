@@ -20,6 +20,8 @@ public class Servidor extends Thread{
     Dado dado = new Dado();
     InterfazJuego gameFrame;
     DoublyLinkedList tablero;
+    Boolean reto = false;
+    Boolean stateDado;
 
     /*
      * Función que en primer lugar crea el servidor en el puerto escogido, luego intercambia mensajes con el
@@ -52,17 +54,22 @@ public class Servidor extends Thread{
                     TimeUnit.MILLISECONDS.sleep(100);
                     //Enviar coordenadas de fichaServer al cliente
                     int posServer = Servidor.getInstancia().gameFrame.getPosFicha1();
-                    mensajeEnviado = new Mensaje(tablero, !Servidor.getInstancia().gameFrame.isVisibleDado(), false, posServer);
+                    mensajeEnviado = new Mensaje(tablero, !Servidor.getInstancia().gameFrame.isVisibleDado(), reto, posServer);
                     enviar.writeObject(mensajeEnviado); //Se envía el objeto
                 } else 
                 {
+                    TimeUnit.MILLISECONDS.sleep(100);
                     Mensaje mensajeRecibido = (Mensaje) recibir.readObject();
-                    Boolean stateDado = mensajeRecibido.getDado();
-                    Boolean reto = mensajeRecibido.getReto();
+                    stateDado = mensajeRecibido.getDado();
+                    reto = mensajeRecibido.getReto();
                     int posFicha2 = mensajeRecibido.getPosicion();
                     Servidor.getInstancia().gameFrame.setPosFicha2(posFicha2);
                     gameFrame.setVisibleDado(stateDado);
-                    TimeUnit.MILLISECONDS.sleep(100);
+                    if (reto == true){
+                        gameFrame.generaReto(1);
+                        reto = false;
+                        mensajeRecibido.setReto();
+                    }
                 }
             }
            socket.close();
