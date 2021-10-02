@@ -33,6 +33,7 @@ public class Mensaje implements Serializable{
     public void setReto(){
         this.reto = false;
     }
+
     public void setDado(){
         this.dado = false;
     }

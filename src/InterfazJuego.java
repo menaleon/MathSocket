@@ -5,20 +5,18 @@ import java.awt.event.ActionListener;
 import java.util.Random;
 
 public class InterfazJuego extends Component {
-    int trampa = 0;
-    int tunel = 0;
-
     JFrame frame;
-    DoublyLinkedList copy;
+    DoublyLinkedList tablero;
     JLabel [][] matriz;
     JButton dado;
 
-    int x = 10; // Coordenada x variable para cada botón en la matriz
-    int y = 10; // Coordenada y variable para botón en la matriz
+    int jugador;
+    int x = 20; // Coordenada x variable para cada botón en la matriz
+    int y = 100; // Coordenada y variable para botón en la matriz
     int filas = 4;
     int columnas = 4;
     int elemento = 0;
-    int tipoCasilla; // Puede ser 0 (tunel), 1 (trampa) ó 2 (reto)
+    int tipoCasilla; // Puede ser 0 (reto), 1 (trampa), 2 (tunel), 3 (inicio) o 4 (final)
     JLabel ficha1;
     JLabel ficha2;
     int posFicha1 = 0;
@@ -29,25 +27,35 @@ public class InterfazJuego extends Component {
     int posYficha2;
 
     public InterfazJuego(DoublyLinkedList tablero, int jugador){
-        this.copy = tablero;
+        // Definir las imagenes que vamos a utilizar
+        this.tablero = tablero;
+        this.jugador = jugador;
+
+        ImageIcon casillaInicio = new ImageIcon("imagenes/inicio.png");
+        ImageIcon casillaReto = new ImageIcon("imagenes/reto.png");
+        ImageIcon casillaTrampa = new ImageIcon("imagenes/trampa.png");
+        ImageIcon casillaTunel = new ImageIcon("imagenes/tunel.png");
+        ImageIcon casillaFinal = new ImageIcon("imagenes/final.png");
 
         //Ventana de juego
         frame = new JFrame();
         if (jugador == 1){
-            frame.setTitle("Servidor - Lets Play");
+            frame.setTitle("Tablero - Servidor");
         } else if (jugador == 2) {
-            frame.setTitle("Cliente - Lets Play");
+            frame.setTitle("Tablero - Cliente");
         }
-        frame.setSize(700, 700);
+        frame.setSize(620, 735);
         frame.setLocationRelativeTo(null);
         frame.setResizable(false);
         frame.setVisible(true);
         frame.setLayout(null);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        
-        //Dado
+        ImageIcon image = new ImageIcon("imagenes/logo.png");
+        frame.setIconImage(image.getImage());
+
+        // Creacion del Componente Dado
         dado = new JButton("Tirar dado");
-        dado.setBounds(550, 200, 100, 50);
+        dado.setBounds(500, 25, 100, 50);
         frame.add(dado);
         dado.addActionListener(new ActionListener(){
             public void actionPerformed(ActionEvent e){
@@ -56,13 +64,16 @@ public class InterfazJuego extends Component {
             }
         });
 
-        //Jugadores
+        // Imagen de las Fichas de los Jugadores
         ImageIcon J1 = new ImageIcon("imagenes/J1.png");
         ImageIcon J2 = new ImageIcon("imagenes/J2.png");
+
+        // Imagen de las Casillas del Tablero
+
         ficha1 = new JLabel();
         ficha2 = new JLabel();
-        ficha1.setBounds(20, 50, 30, 30);
-        ficha2.setBounds(50, 50, 30, 30);
+        ficha1.setBounds(26, 106, 30, 30);
+        ficha2.setBounds(58, 106, 30, 30);
         ficha1.setIcon(J1);
         ficha2.setIcon(J2);
         frame.add(ficha1);
@@ -71,10 +82,7 @@ public class InterfazJuego extends Component {
         //Casillas del tablero
         matriz = new JLabel[filas][columnas];
 
-        ImageIcon casillaReto = new ImageIcon("imagenes/reto.png");
-        ImageIcon casillaTrampa = new ImageIcon("imagenes/trampa.png");
-        ImageIcon casillaTunel = new ImageIcon("imagenes/tunel.png");
-        
+
         for (int i=0; i<filas; i++){
             for (int j=0; j<columnas; j++){
                 int nuevoJ = j;
@@ -82,15 +90,17 @@ public class InterfazJuego extends Component {
                     nuevoJ = 3-j;
                 }
                 matriz[i][nuevoJ] = new JLabel();
-                tipoCasilla = copy.show(elemento);
-                if(tipoCasilla == 0 && tunel < 4){
-                    matriz[i][nuevoJ].setIcon(casillaTunel);
-                    tunel++;
-                }else if(tipoCasilla == 1 && trampa < 4){
-                    matriz[i][nuevoJ].setIcon(casillaTrampa);
-                    trampa++;
-                }else{
+                tipoCasilla = tablero.show(elemento);
+                if(tipoCasilla == 0){
                     matriz[i][nuevoJ].setIcon(casillaReto);
+                }else if(tipoCasilla == 1){
+                    matriz[i][nuevoJ].setIcon(casillaTrampa);
+                }else if(tipoCasilla == 2){
+                    matriz[i][nuevoJ].setIcon(casillaTunel);
+                }else if(tipoCasilla == 3){
+                    matriz[i][nuevoJ].setIcon(casillaInicio);
+                }else {
+                    matriz[i][nuevoJ].setIcon(casillaFinal);
                 }
                 frame.add(matriz[i][nuevoJ]);
                 elemento++;
@@ -99,11 +109,11 @@ public class InterfazJuego extends Component {
         
         for (int i=0; i<filas; i++){
             for (int j=0; j<columnas; j++){
-                matriz[i][j].setBounds(x, y, 90, 80);
-                x += 130;
+                matriz[i][j].setBounds(x, y, 150, 150);
+                x += 142;
             }
-            x = 10;
-            y += 130;
+            x = 20;
+            y += 145;
         }
 
         SwingUtilities.updateComponentTreeUI(frame);
@@ -126,21 +136,21 @@ public class InterfazJuego extends Component {
             else if (posFicha1 < 0){
                 posFicha1 = 0;
             }
-            posXficha1 = 20 + (posFicha1%4) * 130;
-            posYficha1 = 50 + (posFicha1/4) * 130;
+            posXficha1 = 26 + (posFicha1%4) * 142;
+            posYficha1 = 106 + (posFicha1/4) * 145;
             if ((posFicha1/4)%2 == 1) {
-                posXficha1 = 20 + (3-(posFicha1%4)) * 130;
+                posXficha1 = 26 + (3-(posFicha1%4)) * 142;
             }
             ficha1.setBounds(posXficha1, posYficha1, 30, 30);
-            int typeCasilla = copy.show(posFicha1);
-            if(typeCasilla == 0){
+            int typeCasilla = tablero.show(posFicha1);
+            if(typeCasilla == 2){
                 int nuevoAvance = new Random().nextInt(3) + 1;
                 System.out.println("Soy server tunel " + nuevoAvance);
                 posFicha1 = posFicha1 + nuevoAvance;
-                posXficha1 = 20 + (posFicha1%4) * 130;
-                posYficha1 = 50 + (posFicha1/4) * 130;
+                posXficha1 = 26 + (posFicha1%4) * 142;
+                posYficha1 = 106 + (posFicha1/4) * 145;
                 if((posFicha1/4)%2 == 1) {
-                    posXficha1 = 20 + (3-(posFicha1%4)) * 130;
+                    posXficha1 = 26 + (3-(posFicha1%4)) * 142;
                 }
                 ficha1.setBounds(posXficha1, posYficha1, 30, 30);
             }
@@ -148,14 +158,14 @@ public class InterfazJuego extends Component {
                 int nuevoAvance = new Random().nextInt(3) + 1;
                 System.out.println("Soy server trampa " + nuevoAvance);
                 posFicha1 = posFicha1 - nuevoAvance;
-                posXficha1 = 20 + (posFicha1%4) * 130;
-                posYficha1 = 50 + (posFicha1/4) * 130;
+                posXficha1 = 26 + (posFicha1%4) * 142;
+                posYficha1 = 106 + (posFicha1/4) * 145;
                 if((posFicha1/4)%2 == 1) {
-                    posXficha1 = 20 + (3-(posFicha1%4)) * 130;
+                    posXficha1 = 26 + (3-(posFicha1%4)) * 142;
                 }
                 ficha1.setBounds(posXficha1, posYficha1, 30, 30);
             }
-            else if(typeCasilla == 2){
+            else if(typeCasilla == 0){
                 setReto(1, true);
                 System.out.println("Soy server reto");
             }
@@ -168,22 +178,22 @@ public class InterfazJuego extends Component {
             else if (posFicha2 < 0){
                 posFicha2 = 0;
             }
-            int posXficha2 = 50 + (posFicha2%4) * 130;
-            int posYficha2 = 50 + (posFicha2/4) * 130;
+            int posXficha2 = 58 + (posFicha2%4) * 142;
+            int posYficha2 = 106 + (posFicha2/4) * 145;
             if((posFicha2/4)%2 == 1) {
-                posXficha2 = 50 + (3-(posFicha2%4)) * 130;
+                posXficha2 = 58 + (3-(posFicha2%4)) * 142;
             }
             ficha2.setBounds(posXficha2, posYficha2, 30, 30);
 
-            int typeCasilla = copy.show(posFicha2);
+            int typeCasilla = tablero.show(posFicha2);
             if(typeCasilla == 0){
                 int nuevoAvance = new Random().nextInt(3) + 1;
                 System.out.println("Soy cliente tunel " + nuevoAvance);
                 posFicha2 = posFicha2 + nuevoAvance;
-                posXficha2 = 50 + (posFicha2%4) * 130;
-                posYficha2 = 50 + (posFicha2/4) * 130;
+                posXficha2 = 58 + (posFicha2%4) * 142;
+                posYficha2 = 106 + (posFicha2/4) * 145;
                 if((posFicha2/4)%2 == 1) {
-                    posXficha2 = 50 + (3-(posFicha2%4)) * 130;
+                    posXficha2 = 58 + (3-(posFicha2%4)) * 142;
                 }
                 ficha2.setBounds(posXficha2, posYficha2, 30, 30);
             }
@@ -191,10 +201,10 @@ public class InterfazJuego extends Component {
                 int nuevoAvance = new Random().nextInt(3) + 1;
                 System.out.println("Soy cliente trampa " + nuevoAvance);
                 posFicha2 = posFicha2 - nuevoAvance;
-                posXficha2 = 50 + (posFicha2%4) * 130;
-                posYficha2 = 50 + (posFicha2/4) * 130;
+                posXficha2 = 58 + (posFicha2%4) * 142;
+                posYficha2 = 106 + (posFicha2/4) * 145;
                 if((posFicha2/4)%2 == 1) {
-                    posXficha2 = 50 + (3-(posFicha2%4)) * 130;
+                    posXficha2 = 58 + (3-(posFicha2%4)) * 142;
                 }
                 ficha2.setBounds(posXficha2, posYficha2, 30, 30);
             }
@@ -207,16 +217,16 @@ public class InterfazJuego extends Component {
     }
 
     public void refrescarFichas(){ 
-        posXficha1 = 20 + (this.posFicha1%4) * 130;
-        posYficha1 = 50 + (this.posFicha1/4) * 130;
+        posXficha1 = 26 + (this.posFicha1%4) * 142;
+        posYficha1 = 106 + (this.posFicha1/4) * 145;
         if((this.posFicha1/4)%2 == 1) {
-            posXficha1 = 20 + (3-(this.posFicha1%4)) * 130;
+            posXficha1 = 26 + (3-(this.posFicha1%4)) * 142;
         }
         ficha1.setBounds(posXficha1, posYficha1, 30, 30);
-        int posXficha2 = 50 + (this.posFicha2%4) * 130;
-        int posYficha2 = 50 + (this.posFicha2/4) * 130;
+        int posXficha2 = 58 + (this.posFicha2%4) * 142;
+        int posYficha2 = 106 + (this.posFicha2/4) * 145;
         if((posFicha2/4)%2 == 1) {
-            posXficha2 = 50 + (3-(this.posFicha2%4)) * 130;
+            posXficha2 = 58 + (3-(this.posFicha2%4)) * 142;
         }
         ficha2.setBounds(posXficha2, posYficha2, 30, 30);
         SwingUtilities.updateComponentTreeUI(frame);
@@ -344,6 +354,6 @@ public class InterfazJuego extends Component {
     }
 
     public DoublyLinkedList getList(){
-        return this.copy;
+        return this.tablero;
     }
 }

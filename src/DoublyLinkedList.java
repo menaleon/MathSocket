@@ -20,22 +20,13 @@ public class DoublyLinkedList implements Serializable { // Atributes: head (inic
         this.last = null;
         this.size = 0;
 
-        // Generación de elementos. Es aleatoria y diferente cada vez que se ejecute el Servidor, pero se envía una copia en Cliente
-        for(int i=0; i<16; i++){
-            tipoCasilla = random.nextInt(3);
-            if(tipoCasilla == 0 && tunel < 4){
-                insertLast("Tunel", 0);
-                tunel++;
-            }else if(tipoCasilla == 1 && trampa < 4 ){
-                insertLast("Trampa", 1);
-                trampa++;
-            }else{
-                insertLast("Reto", 2);
-                reto++;
-            }
-            System.out.println(i);
-            System.out.println(this.size);
-        }
+        // Generación de elementos. Es aleatoria y diferente cada vez que se ejecute el Servidor, pero se envía una copia al Cliente
+        crearTablero();
+    }
+
+    // Metodo para retornar el primer nodo de la lista
+    public Node getHead() {
+        return this.head;
     }
 
     public boolean isEmpty(){ // verifies if the list is empty
@@ -71,5 +62,38 @@ public class DoublyLinkedList implements Serializable { // Atributes: head (inic
             cont++;
         }
         return current.getcType();
+    }
+
+    public void crearTablero(){
+        for (int key = 0; key < 16; key++) {
+            if (key == 0) {
+                insertLast("Inicio",3);
+            }
+            else if (key == 15) {
+                insertLast("Final",4);
+            }
+            else {
+                crearTableroAux();
+            }
+        }
+    }
+
+    public void crearTableroAux(){
+        int numAleatorio = (int) (Math.random()*4+1);
+        if (numAleatorio == 1 || numAleatorio == 2 && reto < 7) {
+            reto++;
+            insertLast("Reto",0);
+        }
+        else if (numAleatorio == 3 && trampa < 4) {
+            trampa++;
+            insertLast("Trampa",1);
+        }
+        else if (numAleatorio == 4 && tunel < 3) {
+            tunel++;
+            insertLast("Tunel", 2);
+        }
+        else{
+            crearTableroAux();
+        }
     }
 }
