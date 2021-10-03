@@ -21,6 +21,7 @@ public class Servidor extends Thread{
     InterfazJuego gameFrame;
     DoublyLinkedList tablero;
     Boolean reto = false;
+    Boolean enReto = false;
     Boolean stateDado;
 
     /*
@@ -46,7 +47,7 @@ public class Servidor extends Thread{
             recibir = new ObjectInputStream(socket.getInputStream());
             gameFrame = new InterfazJuego(tablero, 1);
             frame.setVisible(false);
-            Mensaje mensajeEnviado = new Mensaje(tablero, false, false, 0);
+            Mensaje mensajeEnviado = new Mensaje(tablero, false, false, 0,0);
             enviar.writeObject(mensajeEnviado); // el tablero es una lista, es decir, aquí se envía una lista**/
             while(gameState != 0) {
                 if (Servidor.getInstancia().gameFrame.isVisibleDado())
@@ -54,20 +55,25 @@ public class Servidor extends Thread{
                     TimeUnit.MILLISECONDS.sleep(100);
                     //Enviar coordenadas de fichaServer al cliente
                     int posServer = Servidor.getInstancia().gameFrame.getPosFicha1();
-                    mensajeEnviado = new Mensaje(tablero, !Servidor.getInstancia().gameFrame.isVisibleDado(), reto, posServer);
+                    int posCliente = Servidor.getInstancia().gameFrame.getPosFicha2();
+                    mensajeEnviado = new Mensaje(tablero, !Servidor.getInstancia().gameFrame.isVisibleDado(), reto, posCliente, posServer);
                     enviar.writeObject(mensajeEnviado); //Se envía el objeto
+                    enReto = false;
                 } else 
                 {
                     TimeUnit.MILLISECONDS.sleep(100);
                     Mensaje mensajeRecibido = (Mensaje) recibir.readObject();
                     stateDado = mensajeRecibido.getDado();
                     reto = mensajeRecibido.getReto();
-                    int posFicha2 = mensajeRecibido.getPosicion();
+                    int posFicha2 = mensajeRecibido.getPosCliente();
+                    int posFicha1 = mensajeRecibido.getPosServer();
                     Servidor.getInstancia().gameFrame.setPosFicha2(posFicha2);
+                    Servidor.getInstancia().gameFrame.setPosFicha1(posFicha1);
                     gameFrame.setVisibleDado(stateDado);
-                    if (reto == true){
+                    if (reto == true && enReto == false){
                         gameFrame.generaReto(1);
                         reto = false;
+                        enReto = true;
                         mensajeRecibido.setReto();
                     }
                 }

@@ -186,7 +186,7 @@ public class InterfazJuego extends Component {
             ficha2.setBounds(posXficha2, posYficha2, 30, 30);
 
             int typeCasilla = tablero.show(posFicha2);
-            if(typeCasilla == 0){
+            if(typeCasilla == 2){
                 int nuevoAvance = new Random().nextInt(3) + 1;
                 System.out.println("Soy cliente tunel " + nuevoAvance);
                 posFicha2 = posFicha2 + nuevoAvance;
@@ -208,7 +208,7 @@ public class InterfazJuego extends Component {
                 }
                 ficha2.setBounds(posXficha2, posYficha2, 30, 30);
             }
-            else if(typeCasilla == 2){
+            else if(typeCasilla == 0){
                 setReto(2, true);
                 System.out.println("Soy cliente reto");
             }
@@ -245,10 +245,22 @@ public class InterfazJuego extends Component {
         return this.posFicha2;
     }
     public void setPosFicha1(int posicion){
+        if (posicion<0){
+            posicion =0;
+        }
+        else if (posicion > 15){
+            posicion = 15;
+        }
         this.posFicha1 = posicion;
         this.refrescarFichas();
     }
     public void setPosFicha2(int posicion){
+        if (posicion<0){
+            posicion =0;
+        }
+        else if (posicion > 15){
+            posicion = 15;
+        }
         this.posFicha2 = posicion;
         this.refrescarFichas();
     }
@@ -278,29 +290,29 @@ public class InterfazJuego extends Component {
         JLabel Operacion;
         if(operador==0){
             Operacion = new JLabel(num1String + " + " + num2String);
-            Operacion.setBounds(550, 30, 100, 50);
+            Operacion.setBounds(100, 20, 100, 50);
             respuesta = Integer.toString(num1+num2);
         }
         else if (operador==1){
             Operacion = new JLabel(num1String + " - " + num2String);
-            Operacion.setBounds(550, 30, 100, 50);
+            Operacion.setBounds(100, 20, 100, 50);
             respuesta = Integer.toString(num1-num2);
         }
         else if(operador==2){
             Operacion = new JLabel(num1String + " x " + num2String);
-            Operacion.setBounds(550, 30, 100, 50);
+            Operacion.setBounds(100, 20, 100, 50);
             respuesta = Integer.toString(num1*num2);
         }
         else {
             Operacion = new JLabel(num1String + " / " + num2String);
-            Operacion.setBounds(550, 30, 100, 50);
+            Operacion.setBounds(100, 20, 100, 50);
             respuesta = Integer.toString(num1/num2);
         }
         JTextField write = new JTextField();
-        write.setBounds(550, 400, 50, 20);
+        write.setBounds(200, 20, 50, 20);
         frame.add(write);
         JButton responder = new JButton("Enviar");
-        responder.setBounds(550, 100, 100, 50);
+        responder.setBounds(350, 20, 80, 50);
         frame.add(responder);
         if(jugador == 1){
             Servidor.getInstancia().gameFrame.frame.add(write);
@@ -315,7 +327,7 @@ public class InterfazJuego extends Component {
         SwingUtilities.updateComponentTreeUI(frame);
         responder.addActionListener(new ActionListener(){
             public void actionPerformed(ActionEvent e){
-                if(write.getText() != respuesta){
+                if(write.getText().equals(respuesta)==false){
                     if(jugador == 1){
                         setPosFicha1(posFicha1-1);
                         setPosFicha2(posFicha2+1);
@@ -333,6 +345,9 @@ public class InterfazJuego extends Component {
                         setPosFicha1(posFicha1+1);
                     }
                 }
+                responder.setVisible(false);
+                write.setVisible(false);
+                Operacion.setVisible(false);
             }
         });
     }

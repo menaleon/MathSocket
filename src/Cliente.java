@@ -17,6 +17,7 @@ public class Cliente extends Thread{
     InterfazJuego gameFrame;
     public DoublyLinkedList tablero;
     Boolean reto = false;
+    Boolean enReto = false;
     Boolean stateDado;
 
     /*
@@ -45,7 +46,7 @@ public class Cliente extends Thread{
             Mensaje mensajeRecibido = (Mensaje) recibir.readObject();
             tablero = mensajeRecibido.getTablero();
             stateDado = mensajeRecibido.getDado();
-            Boolean reto = mensajeRecibido.getReto();
+            reto = mensajeRecibido.getReto();
             gameFrame = new InterfazJuego(tablero, 2);
             gameFrame.setVisibleDado(stateDado);
 
@@ -55,19 +56,24 @@ public class Cliente extends Thread{
                     TimeUnit.MILLISECONDS.sleep(100);
                     //Enviar coordenadas de fichaCliente al servidor
                     int posCliente = Cliente.getInstancia().gameFrame.getPosFicha2();
-                    Mensaje mensajeEnviado = new Mensaje(tablero, !Cliente.getInstancia().gameFrame.isVisibleDado(), reto, posCliente);
+                    int posServer = Cliente.getInstancia().gameFrame.getPosFicha1();
+                    Mensaje mensajeEnviado = new Mensaje(tablero, !Cliente.getInstancia().gameFrame.isVisibleDado(), reto, posCliente, posServer);
                     enviar.writeObject(mensajeEnviado); //Se envía el objeto
+                    enReto = false;
                 } else {
                     TimeUnit.MILLISECONDS.sleep(100);
                     mensajeRecibido = (Mensaje) recibir.readObject();
                     stateDado = mensajeRecibido.getDado();
                     reto = mensajeRecibido.getReto();
-                    int posFicha1 = mensajeRecibido.getPosicion();
+                    int posFicha1 = mensajeRecibido.getPosServer();
+                    int posFicha2 = mensajeRecibido.getPosCliente();
                     Cliente.getInstancia().gameFrame.setPosFicha1(posFicha1);
+                    Cliente.getInstancia().gameFrame.setPosFicha2(posFicha2);
                     gameFrame.setVisibleDado(stateDado);
-                    if (reto == true){
+                    if (reto == true && enReto == false){
                         gameFrame.generaReto(2);
                         reto = false;
+                        enReto = true;
                         mensajeRecibido.setReto();
                     }
                 }

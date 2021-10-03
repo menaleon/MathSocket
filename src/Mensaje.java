@@ -5,13 +5,15 @@ public class Mensaje implements Serializable{
     DoublyLinkedList tablero;
     Boolean dado;
     Boolean reto;
-    int posicion;
+    int posCliente;
+    int posServer;
 
-    public Mensaje (DoublyLinkedList tablero, Boolean dado, Boolean reto, int posicion){
+    public Mensaje (DoublyLinkedList tablero, Boolean dado, Boolean reto, int posCliente, int posServer){
         this.tablero = tablero;
         this.dado = dado;
         this.reto = reto;
-        this.posicion = posicion;
+        this.posCliente = posCliente;
+        this.posServer = posServer;
     }
 
     public Boolean getDado(){
@@ -26,8 +28,12 @@ public class Mensaje implements Serializable{
         return this.reto;
     }
 
-    public int getPosicion(){
-        return this.posicion;
+    public int getPosCliente(){
+        return this.posCliente;
+    }
+
+    public int getPosServer(){
+        return this.posServer;
     }
 
     public void setReto(){
