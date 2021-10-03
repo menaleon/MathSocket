@@ -39,9 +39,6 @@ public class Cliente extends Thread{
             ObjectInputStream recibir = new ObjectInputStream(socket.getInputStream());
             ObjectOutputStream enviar = new ObjectOutputStream(socket.getOutputStream());
 
-            //recibir = new DataInputStream(socket.getInputStream());
-            //enviar = new DataOutputStream(socket.getOutputStream());
-
             // VENTANA DE JUEGO
             Mensaje mensajeRecibido = (Mensaje) recibir.readObject();
             tablero = mensajeRecibido.getTablero();
@@ -80,7 +77,6 @@ public class Cliente extends Thread{
             }
             socket.close();
             // <---- Aquí iria la función que me termina el juego
-
         } catch (IOException | ClassNotFoundException | InterruptedException ex) { //Excepción al no poder conectarse al servidor en el puerto indicado o un fallo en la conexión
             JOptionPane.showMessageDialog(null,"No hay salas de juego disponibles, reinicia el cliente:\n" + ex.toString());
         }
@@ -168,9 +164,6 @@ public class Cliente extends Thread{
     }
 
     public static void main(String[] args) {
-        // <----- Aquí se pondría la llamada a la función que inicia la interfaz de la sala de espera
-        //Cliente.getInstancia().conectarServer(); //Conseguir la instancia con el singleton de Server
         Cliente.getInstancia().interfazInicio();
-        //InterfazJuego pruebilla = new InterfazJuego();
     }
 }

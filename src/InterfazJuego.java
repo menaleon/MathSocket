@@ -9,7 +9,7 @@ public class InterfazJuego extends Component {
     DoublyLinkedList tablero;
     JLabel [][] matriz;
     JButton dado;
-
+    JButton responder;
     int jugador;
     int x = 20; // Coordenada x variable para cada botón en la matriz
     int y = 100; // Coordenada y variable para botón en la matriz
@@ -59,8 +59,13 @@ public class InterfazJuego extends Component {
         frame.add(dado);
         dado.addActionListener(new ActionListener(){
             public void actionPerformed(ActionEvent e){
-                moverFicha(jugador,Dado.getInstancia().Tirar());
-                setVisibleDado(false);
+                if (responder== null || responder.isVisible()==false){
+                    moverFicha(jugador,Dado.getInstancia().Tirar());
+                    setVisibleDado(false);
+                }
+                else{
+                    JOptionPane.showMessageDialog(frame,"Debe responder el reto para continuar");
+                }
             }
         });
 
@@ -129,41 +134,20 @@ public class InterfazJuego extends Component {
 
     public void moverFicha(int jugador, int avance){ // NO se está tomando en cuenta la casilla gráfica en donde está el jugador!!!
         if (jugador == 1) {
-            posFicha1 = posFicha1 + avance;
-            if (posFicha1 > 15){
-                posFicha1 = 15;
-            }
-            else if (posFicha1 < 0){
-                posFicha1 = 0;
-            }
-            posXficha1 = 26 + (posFicha1%4) * 142;
-            posYficha1 = 106 + (posFicha1/4) * 145;
-            if ((posFicha1/4)%2 == 1) {
-                posXficha1 = 26 + (3-(posFicha1%4)) * 142;
-            }
-            ficha1.setBounds(posXficha1, posYficha1, 30, 30);
+            setPosFicha1(posFicha1+avance);
+            refrescarFichas();
             int typeCasilla = tablero.show(posFicha1);
             if(typeCasilla == 2){
                 int nuevoAvance = new Random().nextInt(3) + 1;
                 System.out.println("Soy server tunel " + nuevoAvance);
-                posFicha1 = posFicha1 + nuevoAvance;
-                posXficha1 = 26 + (posFicha1%4) * 142;
-                posYficha1 = 106 + (posFicha1/4) * 145;
-                if((posFicha1/4)%2 == 1) {
-                    posXficha1 = 26 + (3-(posFicha1%4)) * 142;
-                }
-                ficha1.setBounds(posXficha1, posYficha1, 30, 30);
+                setPosFicha1(posFicha1+nuevoAvance);
+                refrescarFichas();
             }
             else if(typeCasilla == 1){
                 int nuevoAvance = new Random().nextInt(3) + 1;
                 System.out.println("Soy server trampa " + nuevoAvance);
-                posFicha1 = posFicha1 - nuevoAvance;
-                posXficha1 = 26 + (posFicha1%4) * 142;
-                posYficha1 = 106 + (posFicha1/4) * 145;
-                if((posFicha1/4)%2 == 1) {
-                    posXficha1 = 26 + (3-(posFicha1%4)) * 142;
-                }
-                ficha1.setBounds(posXficha1, posYficha1, 30, 30);
+                setPosFicha1(posFicha1-nuevoAvance);
+                refrescarFichas();
             }
             else if(typeCasilla == 0){
                 setReto(1, true);
@@ -171,42 +155,21 @@ public class InterfazJuego extends Component {
             }
         }
         else if (jugador == 2){ // ES EL SEGUNDO JUGADOR
-            posFicha2 = posFicha2 + avance;
-            if(posFicha2 > 15){
-                posFicha2 = 15;
-            }
-            else if (posFicha2 < 0){
-                posFicha2 = 0;
-            }
-            int posXficha2 = 58 + (posFicha2%4) * 142;
-            int posYficha2 = 106 + (posFicha2/4) * 145;
-            if((posFicha2/4)%2 == 1) {
-                posXficha2 = 58 + (3-(posFicha2%4)) * 142;
-            }
-            ficha2.setBounds(posXficha2, posYficha2, 30, 30);
+            setPosFicha2(posFicha2+avance);
+            refrescarFichas();
 
             int typeCasilla = tablero.show(posFicha2);
             if(typeCasilla == 2){
                 int nuevoAvance = new Random().nextInt(3) + 1;
                 System.out.println("Soy cliente tunel " + nuevoAvance);
-                posFicha2 = posFicha2 + nuevoAvance;
-                posXficha2 = 58 + (posFicha2%4) * 142;
-                posYficha2 = 106 + (posFicha2/4) * 145;
-                if((posFicha2/4)%2 == 1) {
-                    posXficha2 = 58 + (3-(posFicha2%4)) * 142;
-                }
-                ficha2.setBounds(posXficha2, posYficha2, 30, 30);
+                setPosFicha2(posFicha2+nuevoAvance);
+                refrescarFichas();
             }
             else if(typeCasilla == 1){
                 int nuevoAvance = new Random().nextInt(3) + 1;
                 System.out.println("Soy cliente trampa " + nuevoAvance);
-                posFicha2 = posFicha2 - nuevoAvance;
-                posXficha2 = 58 + (posFicha2%4) * 142;
-                posYficha2 = 106 + (posFicha2/4) * 145;
-                if((posFicha2/4)%2 == 1) {
-                    posXficha2 = 58 + (3-(posFicha2%4)) * 142;
-                }
-                ficha2.setBounds(posXficha2, posYficha2, 30, 30);
+                setPosFicha2(posFicha2-nuevoAvance);
+                refrescarFichas();
             }
             else if(typeCasilla == 0){
                 setReto(2, true);
@@ -253,6 +216,15 @@ public class InterfazJuego extends Component {
         }
         this.posFicha1 = posicion;
         this.refrescarFichas();
+        if (posFicha1 == 15){
+            Servidor.getInstancia().gameState = 0;
+            Cliente.getInstancia().gameState = 0;
+            String ganador = Servidor.getInstancia().nombreJugador1;
+            if (ganador == null){
+                ganador = "Su rival";
+            }
+            JOptionPane.showMessageDialog(frame, ganador +" gano");
+        }
     }
     public void setPosFicha2(int posicion){
         if (posicion<0){
@@ -263,6 +235,15 @@ public class InterfazJuego extends Component {
         }
         this.posFicha2 = posicion;
         this.refrescarFichas();
+        if (posFicha2 == 15){
+            Servidor.getInstancia().gameState = 0;
+            Cliente.getInstancia().gameState = 0;
+            String ganador = Cliente.getInstancia().nombreJugador2;
+            if (ganador == null){
+                ganador = "Su rival";
+            }
+            JOptionPane.showMessageDialog(frame, ganador +" gano");
+        }
     }
 
     public void setVisible(boolean visibility){
@@ -311,7 +292,7 @@ public class InterfazJuego extends Component {
         JTextField write = new JTextField();
         write.setBounds(200, 20, 50, 20);
         frame.add(write);
-        JButton responder = new JButton("Enviar");
+        responder = new JButton("Enviar");
         responder.setBounds(350, 20, 80, 50);
         frame.add(responder);
         if(jugador == 1){
@@ -350,22 +331,6 @@ public class InterfazJuego extends Component {
                 Operacion.setVisible(false);
             }
         });
-    }
-
-    public void actualizarUI(int jugadorPorActualizar, int newX, int newY){
-        if (jugadorPorActualizar == 1){
-            this.posXficha1 = newX;
-            this.posYficha1 = newY;
-            ficha1.setBounds(posXficha1, posYficha1, 30, 30);
-            SwingUtilities.updateComponentTreeUI(frame);
-
-        }
-        else{
-            this.posXficha2 = newX;
-            this.posYficha2 = newY;
-            ficha2.setBounds(posXficha2, posYficha2, 30, 30);
-            SwingUtilities.updateComponentTreeUI(frame);
-        }
     }
 
     public DoublyLinkedList getList(){

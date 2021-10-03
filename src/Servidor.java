@@ -169,8 +169,6 @@ public class Servidor extends Thread{
     }
 
     public static void main(String[] args) {
-        // <----- Aquí se pondría la llamada a la función que inicia la interfaz de la sala de espera.
-        //Servidor.getInstancia().iniciarServer(); //Conseguir la instancia con el singleton de Server.
         Servidor.getInstancia().interfazInicio();
     }
 }
