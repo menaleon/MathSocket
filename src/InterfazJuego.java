@@ -5,39 +5,40 @@ import java.awt.event.ActionListener;
 import java.util.Random;
 
 public class InterfazJuego extends Component {
-    JFrame frame;
-    DoublyLinkedList tablero;
-    JLabel [][] matriz;
-    JButton dado;
-    JButton responder;
-    int jugador;
+    JFrame frame; // pestaña donde se genera la interfaz
+    DoublyLinkedList tablero; // lista doblemente enlazada que contiene la distribución del tablero
+    JLabel [][] matriz; // matriz de labels (esta la hacemos para simplificar el codigo usando reiteración y poder hacer el tablero como una serpiente)
+    JButton dado; // botón para tirar el dado
+    JButton responder; // botón para enviar respuesta
+    int jugador; // variable que identifica si es el servidor o el cliente quien quiere realizar una acción
     int x = 20; // Coordenada x variable para cada botón en la matriz
     int y = 100; // Coordenada y variable para botón en la matriz
-    int filas = 4;
-    int columnas = 4;
-    int elemento = 0;
+    int filas = 4; // Cantidad de filas del tablero
+    int columnas = 4; // Cantidad de columnas del tablero
+    int elemento = 0; //
     int tipoCasilla; // Puede ser 0 (reto), 1 (trampa), 2 (tunel), 3 (inicio) o 4 (final)
-    JLabel ficha1;
-    JLabel ficha2;
-    int posFicha1 = 0;
-    int posFicha2 = 0;
-    int posXficha1;
-    int posYficha1;
-    int posXficha2;
-    int posYficha2;
+    JLabel ficha1; // ficha del jugador 1
+    JLabel ficha2; // ficha del jugador 2
+    int posFicha1 = 0; // posicion del jugador 1
+    int posFicha2 = 0; // posicion del jugador 2
+    int posXficha1; // posicion en x en la interfaz de la ficha 1
+    int posYficha1; // posicion en y en la interfaz de la ficha 1
+    int posXficha2; // posicion en x en la interfaz de la ficha 2
+    int posYficha2; // posicion en y en la interfaz de la ficha 2
 
     public InterfazJuego(DoublyLinkedList tablero, int jugador){
         // Definir las imagenes que vamos a utilizar
         this.tablero = tablero;
         this.jugador = jugador;
 
+        // Declaración de las imagenes de las casillas del tablero
         ImageIcon casillaInicio = new ImageIcon("imagenes/inicio.png");
         ImageIcon casillaReto = new ImageIcon("imagenes/reto.png");
         ImageIcon casillaTrampa = new ImageIcon("imagenes/trampa.png");
         ImageIcon casillaTunel = new ImageIcon("imagenes/tunel.png");
         ImageIcon casillaFinal = new ImageIcon("imagenes/final.png");
 
-        //Ventana de juego
+        // Ventana de juego
         frame = new JFrame();
         if (jugador == 1){
             frame.setTitle("Tablero - Servidor");
@@ -73,8 +74,7 @@ public class InterfazJuego extends Component {
         ImageIcon J1 = new ImageIcon("imagenes/J1.png");
         ImageIcon J2 = new ImageIcon("imagenes/J2.png");
 
-        // Imagen de las Casillas del Tablero
-
+        // Creación y posicionamiento de las fichas de los jugadores
         ficha1 = new JLabel();
         ficha2 = new JLabel();
         ficha1.setBounds(26, 106, 30, 30);
@@ -87,6 +87,7 @@ public class InterfazJuego extends Component {
         //Casillas del tablero
         matriz = new JLabel[filas][columnas];
 
+        // Se rellena la matriz usando como base la lista doblemente enlazada y en forma de serpiente
         for (int i=0; i<filas; i++){
             for (int j=0; j<columnas; j++){
                 int nuevoJ = j;
@@ -110,7 +111,7 @@ public class InterfazJuego extends Component {
                 elemento++;
             }
         }
-        
+        // Se agregan los componentes de la matriz en el frame y se acomodan
         for (int i=0; i<filas; i++){
             for (int j=0; j<columnas; j++){
                 matriz[i][j].setBounds(x, y, 150, 150);
@@ -120,6 +121,7 @@ public class InterfazJuego extends Component {
             y += 145;
         }
 
+        // Se actualiza el frame para evitar problemas con los componentes
         SwingUtilities.updateComponentTreeUI(frame);
     }
 
@@ -131,7 +133,7 @@ public class InterfazJuego extends Component {
         return dado.isVisible();
     }
 
-    public void moverFicha(int jugador, int avance){
+    public void moverFicha(int jugador, int avance){ // NO se está tomando en cuenta la casilla gráfica en donde está el jugador!!!
         if (jugador == 1) {
             setPosFicha1(posFicha1+avance);
             refrescarFichas();
@@ -194,6 +196,12 @@ public class InterfazJuego extends Component {
         SwingUtilities.updateComponentTreeUI(frame);
     }
 
+    public JLabel getFicha1(){
+        return ficha1;
+    }
+    public JLabel getFicha2(){
+        return ficha2;
+    }
     public int getPosFicha1(){
         return this.posFicha1;
     }
@@ -209,7 +217,6 @@ public class InterfazJuego extends Component {
         }
         this.posFicha1 = posicion;
         this.refrescarFichas();
-
         if (posFicha1 == 15){
             Servidor.getInstancia().gameState = 0;
             Cliente.getInstancia().gameState = 0;
@@ -217,7 +224,7 @@ public class InterfazJuego extends Component {
             if (ganador == null){
                 ganador = "Su rival";
             }
-            JOptionPane.showMessageDialog(frame, ganador  + " ganó. Excelente partida");
+            JOptionPane.showMessageDialog(frame, ganador +" gano");
         }
     }
     public void setPosFicha2(int posicion){
@@ -229,7 +236,6 @@ public class InterfazJuego extends Component {
         }
         this.posFicha2 = posicion;
         this.refrescarFichas();
-
         if (posFicha2 == 15){
             Servidor.getInstancia().gameState = 0;
             Cliente.getInstancia().gameState = 0;
@@ -237,8 +243,7 @@ public class InterfazJuego extends Component {
             if (ganador == null){
                 ganador = "Su rival";
             }
-            JOptionPane.showMessageDialog(frame,ganador  + " ganó. Excelente partida");
-
+            JOptionPane.showMessageDialog(frame, ganador +" gano");
         }
     }
 
@@ -265,35 +270,32 @@ public class InterfazJuego extends Component {
         String num2String = Integer.toString(num2);
         String respuesta;
         JLabel Operacion;
-
         if(operador==0){
             Operacion = new JLabel(num1String + " + " + num2String);
-            Operacion.setBounds(100, 25, 80, 75);
+            Operacion.setBounds(100, 20, 100, 50);
             respuesta = Integer.toString(num1+num2);
         }
         else if (operador==1){
             Operacion = new JLabel(num1String + " - " + num2String);
-            Operacion.setBounds(100, 25, 80, 75);
+            Operacion.setBounds(100, 20, 100, 50);
             respuesta = Integer.toString(num1-num2);
         }
         else if(operador==2){
             Operacion = new JLabel(num1String + " x " + num2String);
-            Operacion.setBounds(100, 25, 80, 75);
+            Operacion.setBounds(100, 20, 100, 50);
             respuesta = Integer.toString(num1*num2);
         }
         else {
             Operacion = new JLabel(num1String + " / " + num2String);
-            Operacion.setBounds(100, 25, 80, 75);
+            Operacion.setBounds(100, 20, 100, 50);
             respuesta = Integer.toString(num1/num2);
         }
-
         JTextField write = new JTextField();
-        write.setBounds(200, 25, 80, 35);
+        write.setBounds(200, 20, 50, 20);
         frame.add(write);
         responder = new JButton("Enviar");
-        responder.setBounds(350, 25, 80, 50);
+        responder.setBounds(350, 20, 80, 50);
         frame.add(responder);
-
         if(jugador == 1){
             Servidor.getInstancia().gameFrame.frame.add(write);
             Servidor.getInstancia().gameFrame.frame.add(responder);
@@ -304,7 +306,6 @@ public class InterfazJuego extends Component {
             Cliente.getInstancia().gameFrame.frame.add(responder);
             Cliente.getInstancia().gameFrame.frame.add(Operacion);
         }
-
         SwingUtilities.updateComponentTreeUI(frame);
         responder.addActionListener(new ActionListener(){
             public void actionPerformed(ActionEvent e){
