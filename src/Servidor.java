@@ -16,10 +16,12 @@ public class Servidor extends Thread{
     public int PUERTO = 5000; // Puerto en el que se va a crear el servidor.
     public int gameState = 1; // Estado de Juego (Encendido o Apagado)
     public String nombreJugador1; // Nombre del Jugador
-    public JFrame frame;
-    Dado dado = new Dado();
-    InterfazJuego gameFrame;
-    DoublyLinkedList tablero;
+    public JFrame frame; // variable que contiene la interfaz de inicio
+    Dado dado = new Dado(); // variable que contiene el dado
+    InterfazJuego gameFrame; // Variable que guarda el objeto que crea la interfaz de juego
+    DoublyLinkedList tablero; // Variable que guarda la lista doblemente enlazada con la distribución del tablero
+
+    // Variables para saber en que parte del juego nos encontramos
     Boolean reto = false;
     Boolean enReto = false;
     Boolean stateDado;
@@ -32,11 +34,11 @@ public class Servidor extends Thread{
     @Override
     public void run() {
         //Declaración de las variables usadas en la función.
-        tablero = new DoublyLinkedList();
+        tablero = new DoublyLinkedList(); // Se crea una nueva lista con la distribución del tablero
         ServerSocket servidor; // Variable en donde se guarda el servidor que usaremos.
         Socket socket; // Variable que va a contener la conexión entre el cliente y el servidor.
-        ObjectOutputStream enviar; // Variable que funciona para enviar el tablero al cliente.
-        ObjectInputStream recibir;
+        ObjectOutputStream enviar; // Variable que funciona para enviar mensajes cliente.
+        ObjectInputStream recibir; // Variable que funciona para recibir mensajes del cliente.
 
         try {
             servidor = new ServerSocket(PUERTO); // Inicio del Servidor
@@ -121,6 +123,7 @@ public class Servidor extends Thread{
         nombre2.setBounds(42,80, 300,40);
         nombre2.setHorizontalAlignment(JLabel.CENTER);
         nombre2.setHorizontalTextPosition(JLabel.CENTER);
+
         // Configuración del campo de texto
         JTextField username = new JTextField();
         username.setBounds(42, 130, 300,40);
@@ -168,6 +171,10 @@ public class Servidor extends Thread{
         frame.add(esperando);
     }
 
+    /*
+     * Función main de la clase
+     * Se ejecuta al inicio, crea la instancia del singleton y llama a la función que crea la interfaz de inicio
+     */
     public static void main(String[] args) {
         Servidor.getInstancia().interfazInicio();
     }

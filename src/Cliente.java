@@ -13,9 +13,12 @@ public class Cliente extends Thread{
     public int PUERTO = 5000;  //Puerto al que se va a conectar el cliente.
     public String HOST = "LocalHost";  // Dirección del host al que se va a conectar el cliente.
     public int gameState = 1; // Estado de Juego (Encendido o Apagado)
+    public JFrame frame; // variable que contiene la interfaz de inicio
     public String nombreJugador2; // Nombre del Jugador
-    InterfazJuego gameFrame;
-    public DoublyLinkedList tablero;
+    InterfazJuego gameFrame; // Variable que guarda el objeto que crea la interfaz de juego
+    public DoublyLinkedList tablero; // Variable que guarda la lista doblemente enlazada con la distribución del tablero
+
+    // Variables para saber en que parte del juego nos encontramos
     Boolean reto = false;
     Boolean enReto = false;
     Boolean stateDado;
@@ -32,7 +35,7 @@ public class Cliente extends Thread{
 
         try {
             socket = new Socket (HOST, PUERTO); // Conexión al servidor
-            //  <------ Aquí se colocaría el llamado a la función que inicia la interfaz del juego
+
             System.out.println("Cliente Conectado");
 
             // Canales para enviar y recibir
@@ -44,10 +47,10 @@ public class Cliente extends Thread{
             tablero = mensajeRecibido.getTablero();
             stateDado = mensajeRecibido.getDado();
             reto = mensajeRecibido.getReto();
-            gameFrame = new InterfazJuego(tablero, 2);
+            gameFrame = new InterfazJuego(tablero, 2); // creación del objeto de la interfaz
             gameFrame.setVisibleDado(stateDado);
 
-            while(gameState != 0) {
+            while(gameState != 0) { // se mantiene una comunicación constante mediante este while mientras se esté jugando
                 if (Cliente.getInstancia().gameFrame.isVisibleDado())
                 {
                     TimeUnit.MILLISECONDS.sleep(100);
@@ -76,9 +79,8 @@ public class Cliente extends Thread{
                 }
             }
             socket.close();
-            // <---- Aquí iria la función que me termina el juego
         } catch (IOException | ClassNotFoundException | InterruptedException ex) { //Excepción al no poder conectarse al servidor en el puerto indicado o un fallo en la conexión
-            JOptionPane.showMessageDialog(null,"No hay salas de juego disponibles, reinicia el cliente:\n" + ex.toString());
+            JOptionPane.showMessageDialog(null,"Ha ocurrido un error al conectarse, reinicia la aplicación.\n Error:" + ex.toString());
         }
     }
 
@@ -94,6 +96,10 @@ public class Cliente extends Thread{
         return instancia;
     }
 
+    /*
+     * Función de la interfaz inicial
+     * Esta clase es llamada al principio para crear la interfaz en donde el usuario coloca su nombre
+     */
     public void interfazInicio(){
         //Configuración del Label con Imagen
         JLabel mathimage = new JLabel();
@@ -130,7 +136,7 @@ public class Cliente extends Thread{
         esperando.setVisible(false);
 
         //Configuración del Frame del Inicio
-        JFrame frame = new JFrame();
+        frame = new JFrame();
         frame.setTitle("MathSocket - Cliente");
         frame.setSize(700, 400);
         frame.setResizable(false);
@@ -163,6 +169,10 @@ public class Cliente extends Thread{
         frame.setVisible(true);
     }
 
+    /*
+     * Función main de la clase
+     * Se ejecuta al inicio, crea la instancia del singleton y llama a la función que crea la interfaz de inicio
+     */
     public static void main(String[] args) {
         Cliente.getInstancia().interfazInicio();
     }

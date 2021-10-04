@@ -24,7 +24,7 @@ public class DoublyLinkedList implements Serializable { // Atributes: head (inic
         crearTablero();
     }
 
-    // Metodo para retornar el primer nodo de la lista
+    // Metodo para retornar el primer nodo de la lista (la cabeza)
     public Node getHead() {
         return this.head;
     }
