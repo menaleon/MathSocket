@@ -24,7 +24,6 @@ public class Cliente extends Thread{
     * Función que en primer lugar conecta al cliente en el puerto del server, intercambia mensajes con el
     * servidor de información del juego hasta que alguno de los jugadores gana. Luego cierra la comunicación
     */
-    //public void conectarServer(){
     @Override
     public void run() {
         //Declaración de las variables usadas en la función.
@@ -32,7 +31,6 @@ public class Cliente extends Thread{
 
         try {
             socket = new Socket (HOST, PUERTO); // Conexión al servidor
-            //  <------ Aquí se colocaría el llamado a la función que inicia la interfaz del juego
             System.out.println("Cliente Conectado");
 
             // Canales para enviar y recibir

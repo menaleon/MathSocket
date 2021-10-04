@@ -28,7 +28,6 @@ public class Servidor extends Thread{
      * Función que en primer lugar crea el servidor en el puerto escogido, luego intercambia mensajes con el
      * cliente de información del juego hasta que alguno de los jugadores gana. Luego cierra la comunicación.
      */
-    //public void iniciarServer(){
     @Override
     public void run() {
         //Declaración de las variables usadas en la función.
@@ -49,9 +48,9 @@ public class Servidor extends Thread{
             frame.setVisible(false);
             Mensaje mensajeEnviado = new Mensaje(tablero, false, false, 0,0);
             enviar.writeObject(mensajeEnviado); // el tablero es una lista, es decir, aquí se envía una lista**/
+
             while(gameState != 0) {
-                if (Servidor.getInstancia().gameFrame.isVisibleDado())
-                {
+                if (Servidor.getInstancia().gameFrame.isVisibleDado()) {
                     TimeUnit.MILLISECONDS.sleep(100);
                     //Enviar coordenadas de fichaServer al cliente
                     int posServer = Servidor.getInstancia().gameFrame.getPosFicha1();
@@ -59,8 +58,8 @@ public class Servidor extends Thread{
                     mensajeEnviado = new Mensaje(tablero, !Servidor.getInstancia().gameFrame.isVisibleDado(), reto, posCliente, posServer);
                     enviar.writeObject(mensajeEnviado); //Se envía el objeto
                     enReto = false;
-                } else 
-                {
+
+                } else {
                     TimeUnit.MILLISECONDS.sleep(100);
                     Mensaje mensajeRecibido = (Mensaje) recibir.readObject();
                     stateDado = mensajeRecibido.getDado();
@@ -70,6 +69,7 @@ public class Servidor extends Thread{
                     Servidor.getInstancia().gameFrame.setPosFicha2(posFicha2);
                     Servidor.getInstancia().gameFrame.setPosFicha1(posFicha1);
                     gameFrame.setVisibleDado(stateDado);
+
                     if (reto == true && enReto == false){
                         gameFrame.generaReto(1);
                         reto = false;
@@ -148,6 +148,7 @@ public class Servidor extends Thread{
         });
         play.setHorizontalTextPosition(0);
         play.setBounds(70, 220,250,60);
+
         //Configuración del Frame del Inicio
         frame = new JFrame();
         frame.setTitle("MathSocket - Servidor");
@@ -159,7 +160,8 @@ public class Servidor extends Thread{
         frame.setIconImage(image.getImage());
         frame.getContentPane().setBackground(Color.lightGray);
         frame.setLayout(null);
-       // Agregar los componentes al frame
+
+        // Agregar los componentes al frame
         frame.add(mathimage);
         frame.add(username);
         frame.add(nombre1);

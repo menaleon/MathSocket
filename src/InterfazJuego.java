@@ -87,7 +87,6 @@ public class InterfazJuego extends Component {
         //Casillas del tablero
         matriz = new JLabel[filas][columnas];
 
-
         for (int i=0; i<filas; i++){
             for (int j=0; j<columnas; j++){
                 int nuevoJ = j;
@@ -132,7 +131,7 @@ public class InterfazJuego extends Component {
         return dado.isVisible();
     }
 
-    public void moverFicha(int jugador, int avance){ // NO se está tomando en cuenta la casilla gráfica en donde está el jugador!!!
+    public void moverFicha(int jugador, int avance){
         if (jugador == 1) {
             setPosFicha1(posFicha1+avance);
             refrescarFichas();
@@ -195,12 +194,6 @@ public class InterfazJuego extends Component {
         SwingUtilities.updateComponentTreeUI(frame);
     }
 
-    public JLabel getFicha1(){
-        return ficha1;
-    }
-    public JLabel getFicha2(){
-        return ficha2;
-    }
     public int getPosFicha1(){
         return this.posFicha1;
     }
@@ -216,6 +209,7 @@ public class InterfazJuego extends Component {
         }
         this.posFicha1 = posicion;
         this.refrescarFichas();
+
         if (posFicha1 == 15){
             Servidor.getInstancia().gameState = 0;
             Cliente.getInstancia().gameState = 0;
@@ -223,7 +217,7 @@ public class InterfazJuego extends Component {
             if (ganador == null){
                 ganador = "Su rival";
             }
-            JOptionPane.showMessageDialog(frame, ganador +" gano");
+            JOptionPane.showMessageDialog(frame, ganador  + " ganó. Excelente partida");
         }
     }
     public void setPosFicha2(int posicion){
@@ -235,6 +229,7 @@ public class InterfazJuego extends Component {
         }
         this.posFicha2 = posicion;
         this.refrescarFichas();
+
         if (posFicha2 == 15){
             Servidor.getInstancia().gameState = 0;
             Cliente.getInstancia().gameState = 0;
@@ -242,7 +237,8 @@ public class InterfazJuego extends Component {
             if (ganador == null){
                 ganador = "Su rival";
             }
-            JOptionPane.showMessageDialog(frame, ganador +" gano");
+            JOptionPane.showMessageDialog(frame,ganador  + " ganó. Excelente partida");
+
         }
     }
 
@@ -269,32 +265,35 @@ public class InterfazJuego extends Component {
         String num2String = Integer.toString(num2);
         String respuesta;
         JLabel Operacion;
+
         if(operador==0){
             Operacion = new JLabel(num1String + " + " + num2String);
-            Operacion.setBounds(100, 20, 100, 50);
+            Operacion.setBounds(100, 25, 80, 75);
             respuesta = Integer.toString(num1+num2);
         }
         else if (operador==1){
             Operacion = new JLabel(num1String + " - " + num2String);
-            Operacion.setBounds(100, 20, 100, 50);
+            Operacion.setBounds(100, 25, 80, 75);
             respuesta = Integer.toString(num1-num2);
         }
         else if(operador==2){
             Operacion = new JLabel(num1String + " x " + num2String);
-            Operacion.setBounds(100, 20, 100, 50);
+            Operacion.setBounds(100, 25, 80, 75);
             respuesta = Integer.toString(num1*num2);
         }
         else {
             Operacion = new JLabel(num1String + " / " + num2String);
-            Operacion.setBounds(100, 20, 100, 50);
+            Operacion.setBounds(100, 25, 80, 75);
             respuesta = Integer.toString(num1/num2);
         }
+
         JTextField write = new JTextField();
-        write.setBounds(200, 20, 50, 20);
+        write.setBounds(200, 25, 80, 35);
         frame.add(write);
         responder = new JButton("Enviar");
-        responder.setBounds(350, 20, 80, 50);
+        responder.setBounds(350, 25, 80, 50);
         frame.add(responder);
+
         if(jugador == 1){
             Servidor.getInstancia().gameFrame.frame.add(write);
             Servidor.getInstancia().gameFrame.frame.add(responder);
@@ -305,6 +304,7 @@ public class InterfazJuego extends Component {
             Cliente.getInstancia().gameFrame.frame.add(responder);
             Cliente.getInstancia().gameFrame.frame.add(Operacion);
         }
+
         SwingUtilities.updateComponentTreeUI(frame);
         responder.addActionListener(new ActionListener(){
             public void actionPerformed(ActionEvent e){
