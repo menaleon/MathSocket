@@ -87,27 +87,29 @@ public class InterfazJuego extends Component {
         //Casillas del tablero
         matriz = new JLabel[filas][columnas];
 
-        // Se rellena la matriz usando como base la lista doblemente enlazada y en forma de serpiente
+        // Se rellena la matriz usando como base la lista doblemente enlazada y en forma de serpiente (zig zag)
         for (int i=0; i<filas; i++){
             for (int j=0; j<columnas; j++){
+
                 int nuevoJ = j;
                 if(i%2==1){
                     nuevoJ = 3-j;
                 }
                 matriz[i][nuevoJ] = new JLabel();
                 tipoCasilla = tablero.show(elemento);
-                if(tipoCasilla == 0){
+
+                if(tipoCasilla == 0){ // se añade la casilla reto
                     matriz[i][nuevoJ].setIcon(casillaReto);
-                }else if(tipoCasilla == 1){
+                }else if(tipoCasilla == 1){ // se añade casilla trampa
                     matriz[i][nuevoJ].setIcon(casillaTrampa);
-                }else if(tipoCasilla == 2){
+                }else if(tipoCasilla == 2){ // se añade casilla tunel
                     matriz[i][nuevoJ].setIcon(casillaTunel);
-                }else if(tipoCasilla == 3){
+                }else if(tipoCasilla == 3){ // se añade casilla inicio
                     matriz[i][nuevoJ].setIcon(casillaInicio);
-                }else {
+                }else { // se añade casilla "final"
                     matriz[i][nuevoJ].setIcon(casillaFinal);
                 }
-                frame.add(matriz[i][nuevoJ]);
+                frame.add(matriz[i][nuevoJ]); // se coloca el Label en la ventana para poder verlo
                 elemento++;
             }
         }
@@ -125,54 +127,58 @@ public class InterfazJuego extends Component {
         SwingUtilities.updateComponentTreeUI(frame);
     }
 
-    public void setVisibleDado(Boolean visible){
+    public void setVisibleDado(Boolean visible){ // activa o desactiva el dado según se necesite
         dado.setVisible(visible);
     }
 
-    public Boolean isVisibleDado(){
+    public Boolean isVisibleDado(){ // informa si el dado es visible (activo) o no
         return dado.isVisible();
     }
 
-    public void moverFicha(int jugador, int avance){ // NO se está tomando en cuenta la casilla gráfica en donde está el jugador!!!
-        if (jugador == 1) {
+    public void moverFicha(int jugador, int avance){ // mueve las fichas de los jugadores dependiendo de cuál sea
+
+        if (jugador == 1) { // ES EL JUGADOR 1 (SERVER)
             setPosFicha1(posFicha1+avance);
-            refrescarFichas();
+            refrescarFichas(); // se llama al método que mueve las fichas
+
             int typeCasilla = tablero.show(posFicha1);
-            if(typeCasilla == 2){
+
+            if(typeCasilla == 2){ // si la casilla es de túnel, avanza ciertas casillas en el Server
                 int nuevoAvance = new Random().nextInt(3) + 1;
                 System.out.println("Soy server tunel " + nuevoAvance);
                 setPosFicha1(posFicha1+nuevoAvance);
                 refrescarFichas();
             }
-            else if(typeCasilla == 1){
+            else if(typeCasilla == 1){ // si la casilla es de trampa, se devuelve varias o una casilla (máximo 3)
                 int nuevoAvance = new Random().nextInt(3) + 1;
                 System.out.println("Soy server trampa " + nuevoAvance);
-                setPosFicha1(posFicha1-nuevoAvance);
+                setPosFicha1(posFicha1-nuevoAvance); // ajusta la posición del jugador Server, lo devuelve en el tablero
                 refrescarFichas();
             }
-            else if(typeCasilla == 0){
+            else if(typeCasilla == 0){ // si la casilla es de reto, se establece la variable "reto" como verdadera en el Server
                 setReto(1, true);
                 System.out.println("Soy server reto");
             }
         }
-        else if (jugador == 2){ // ES EL SEGUNDO JUGADOR
+        else if (jugador == 2){ // ES EL SEGUNDO JUGADOR (CLIENTE)
             setPosFicha2(posFicha2+avance);
             refrescarFichas();
 
             int typeCasilla = tablero.show(posFicha2);
-            if(typeCasilla == 2){
+
+            if(typeCasilla == 2){ // si la casilla es de túnel, avanza ciertas casillas en el Server
                 int nuevoAvance = new Random().nextInt(3) + 1;
                 System.out.println("Soy cliente tunel " + nuevoAvance);
                 setPosFicha2(posFicha2+nuevoAvance);
                 refrescarFichas();
             }
-            else if(typeCasilla == 1){
+            else if(typeCasilla == 1){ // si la casilla es de trampa, se devuelve varias o una casilla (máximo 3)
                 int nuevoAvance = new Random().nextInt(3) + 1;
                 System.out.println("Soy cliente trampa " + nuevoAvance);
-                setPosFicha2(posFicha2-nuevoAvance);
+                setPosFicha2(posFicha2-nuevoAvance); // ajusta la posición del jugador Cliente, lo devuelve en el tablero
                 refrescarFichas();
             }
-            else if(typeCasilla == 0){
+            else if(typeCasilla == 0){ // si la casilla es de reto, se establece la variable "reto" como verdadera en el Cliente
                 setReto(2, true);
                 System.out.println("Soy cliente reto");
             }
@@ -180,7 +186,7 @@ public class InterfazJuego extends Component {
         SwingUtilities.updateComponentTreeUI(frame);
     }
 
-    public void refrescarFichas(){ 
+    public void refrescarFichas(){ // actualiza la posición de las fichas
         posXficha1 = 26 + (this.posFicha1%4) * 142;
         posYficha1 = 106 + (this.posFicha1/4) * 145;
         if((this.posFicha1/4)%2 == 1) {
@@ -196,62 +202,62 @@ public class InterfazJuego extends Component {
         SwingUtilities.updateComponentTreeUI(frame);
     }
 
-    public JLabel getFicha1(){
-        return ficha1;
-    }
-    public JLabel getFicha2(){
-        return ficha2;
-    }
-    public int getPosFicha1(){
+    public int getPosFicha1(){ // devuelve el label del jugador 1 (Server)
         return this.posFicha1;
     }
-    public int getPosFicha2(){
+    public int getPosFicha2(){ // devuelve el label del jugador 1 (Server)
         return this.posFicha2;
     }
-    public void setPosFicha1(int posicion){
-        if (posicion<0){
+    public void setPosFicha1(int posicion){ // configura la posición del jugador1 (Server)
+        if (posicion<0){ // por si se pasa de los límites de la pantalla, esto lo posiciona en la primera casilla disponible
             posicion =0;
         }
-        else if (posicion > 15){
+        else if (posicion > 15){ // por si se pasa de los límites de la pantalla, esto lo posiciona en la última casilla disponible
             posicion = 15;
         }
         this.posFicha1 = posicion;
-        this.refrescarFichas();
+        this.refrescarFichas(); // refresca las posiciones de las fichas
+
+        // En caso de que alguien haya ganado el juego
         if (posFicha1 == 15){
             Servidor.getInstancia().gameState = 0;
             Cliente.getInstancia().gameState = 0;
             String ganador = Servidor.getInstancia().nombreJugador1;
-            if (ganador == null){
+            if (ganador == null){ // si no gané yo, entonces ganó mi rival
                 ganador = "Su rival";
             }
             JOptionPane.showMessageDialog(frame, ganador +" gano");
         }
     }
-    public void setPosFicha2(int posicion){
-        if (posicion<0){
+    public void setPosFicha2(int posicion){ // configura la posición del jugador 2 (Cliente)
+
+        if (posicion<0){ // por si se pasa de los límites de la pantalla, esto lo posiciona en la primera casilla disponible
             posicion =0;
         }
-        else if (posicion > 15){
+        else if (posicion > 15){ // por si se pasa de los límites de la pantalla, esto lo posiciona en la última casilla disponible
             posicion = 15;
         }
         this.posFicha2 = posicion;
-        this.refrescarFichas();
+        this.refrescarFichas(); // refresca las posiciones de las fichas
+
+        // En caso de que alguien haya ganado el juego
         if (posFicha2 == 15){
             Servidor.getInstancia().gameState = 0;
             Cliente.getInstancia().gameState = 0;
             String ganador = Cliente.getInstancia().nombreJugador2;
-            if (ganador == null){
+
+            if (ganador == null){ // si no gané yo, entonces ganó mi rival
                 ganador = "Su rival";
             }
             JOptionPane.showMessageDialog(frame, ganador +" gano");
         }
     }
 
-    public void setVisible(boolean visibility){
+    public void setVisible(boolean visibility){ // settea la visibilidad de la ventana
         frame.setVisible(visibility);
     }
 
-    public void setReto(int jugador, Boolean onReto){
+    public void setReto(int jugador, Boolean onReto){ // settea la variable reto de un jugador, dependiendo de cuál sea
         if(jugador == 1){
             Servidor.getInstancia().reto = onReto;
             Servidor.getInstancia().stateDado = !onReto;
@@ -262,14 +268,17 @@ public class InterfazJuego extends Component {
         }
     }
 
-    public void generaReto(int jugador){
+    public void generaReto(int jugador){     // genera aleatoriamente el reto
+
         int num1 = new Random().nextInt(50) + 1;
         int num2 = new Random().nextInt(50) + 1;
         int operador = new Random().nextInt(4);
-        String num1String = Integer.toString(num1);
+        String num1String = Integer.toString(num1); // convierte números a String para poder mostrarlos en la ventana de juego
         String num2String = Integer.toString(num2);
         String respuesta;
         JLabel Operacion;
+
+        // Genera operaciones aleatorias
         if(operador==0){
             Operacion = new JLabel(num1String + " + " + num2String);
             Operacion.setBounds(100, 20, 100, 50);
@@ -290,12 +299,15 @@ public class InterfazJuego extends Component {
             Operacion.setBounds(100, 20, 100, 50);
             respuesta = Integer.toString(num1/num2);
         }
+
         JTextField write = new JTextField();
         write.setBounds(200, 20, 50, 20);
         frame.add(write);
         responder = new JButton("Enviar");
         responder.setBounds(350, 20, 80, 50);
         frame.add(responder);
+
+        // Añade los componentes del reto en la ventana de un jugador, dependiendo de cuál jugador sea
         if(jugador == 1){
             Servidor.getInstancia().gameFrame.frame.add(write);
             Servidor.getInstancia().gameFrame.frame.add(responder);
@@ -307,6 +319,7 @@ public class InterfazJuego extends Component {
             Cliente.getInstancia().gameFrame.frame.add(Operacion);
         }
         SwingUtilities.updateComponentTreeUI(frame);
+
         responder.addActionListener(new ActionListener(){
             public void actionPerformed(ActionEvent e){
                 if(write.getText().equals(respuesta)==false){

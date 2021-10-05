@@ -51,34 +51,41 @@ public class Cliente extends Thread{
             gameFrame.setVisibleDado(stateDado);
 
             while(gameState != 0) { // se mantiene una comunicación constante mediante este while mientras se esté jugando
-                if (Cliente.getInstancia().gameFrame.isVisibleDado())
+                if (Cliente.getInstancia().gameFrame.isVisibleDado()) // si es turno del Cliente (el dado está visible)
                 {
-                    TimeUnit.MILLISECONDS.sleep(100);
+                    TimeUnit.MILLISECONDS.sleep(100); // esperar un rato
                     //Enviar coordenadas de fichaCliente al servidor
                     int posCliente = Cliente.getInstancia().gameFrame.getPosFicha2();
                     int posServer = Cliente.getInstancia().gameFrame.getPosFicha1();
                     Mensaje mensajeEnviado = new Mensaje(tablero, !Cliente.getInstancia().gameFrame.isVisibleDado(), reto, posCliente, posServer);
-                    enviar.writeObject(mensajeEnviado); //Se envía el objeto
+                    enviar.writeObject(mensajeEnviado); //Se envían las coordenadas del Cliente al Server
                     enReto = false;
-                } else {
+
+                } else { // si no es turno del Cliente
+
                     TimeUnit.MILLISECONDS.sleep(100);
-                    mensajeRecibido = (Mensaje) recibir.readObject();
+                    mensajeRecibido = (Mensaje) recibir.readObject(); // recibe las coordenadas del Server
                     stateDado = mensajeRecibido.getDado();
                     reto = mensajeRecibido.getReto();
+
                     int posFicha1 = mensajeRecibido.getPosServer();
                     int posFicha2 = mensajeRecibido.getPosCliente();
-                    Cliente.getInstancia().gameFrame.setPosFicha1(posFicha1);
-                    Cliente.getInstancia().gameFrame.setPosFicha2(posFicha2);
+
+                    Cliente.getInstancia().gameFrame.setPosFicha1(posFicha1); // llama a una función para actualizar las coordenadas del server en esta ventana
+                    Cliente.getInstancia().gameFrame.setPosFicha2(posFicha2); // también actualiza las suyas
+
                     gameFrame.setVisibleDado(stateDado);
-                    if (reto == true && enReto == false){
+
+                    if (reto == true && enReto == false){  // si tiene la variable "reto" activada, llama a una función para generar un reto en pantalla
                         gameFrame.generaReto(2);
-                        reto = false;
+                        reto = false; // lo define como falso para que no vuelva a entrar al if
                         enReto = true;
                         mensajeRecibido.setReto();
                     }
                 }
             }
-            socket.close();
+            socket.close(); // se termina la comunicación por sockets cuando el juego acaba
+
         } catch (IOException | ClassNotFoundException | InterruptedException ex) { //Excepción al no poder conectarse al servidor en el puerto indicado o un fallo en la conexión
             JOptionPane.showMessageDialog(null,"Ha ocurrido un error al conectarse, reinicia la aplicación.\n Error:" + ex.toString());
         }
@@ -101,6 +108,7 @@ public class Cliente extends Thread{
      * Esta clase es llamada al principio para crear la interfaz en donde el usuario coloca su nombre
      */
     public void interfazInicio(){
+
         //Configuración del Label con Imagen
         JLabel mathimage = new JLabel();
         Border borde = BorderFactory.createLineBorder(Color.green, 10);
@@ -139,6 +147,7 @@ public class Cliente extends Thread{
         frame = new JFrame();
         frame.setTitle("MathSocket - Cliente");
         frame.setSize(700, 400);
+        frame.setLocationRelativeTo(null);
         frame.setResizable(false);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         ImageIcon image = new ImageIcon("imagenes/logo.png");
@@ -152,8 +161,8 @@ public class Cliente extends Thread{
             public void actionPerformed(ActionEvent e){
                 nombreJugador2 = username.getText();
                 System.out.println(nombreJugador2);
-                Cliente.getInstancia().start();
-                frame.setVisible(false);
+                Cliente.getInstancia().start(); // Se inicia el thread del cliente para jugar!!!
+                frame.setVisible(false); // se desactiva la ventana de inicio del Cliente
             }
         });
         play.setHorizontalTextPosition(0);

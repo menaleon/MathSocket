@@ -10,7 +10,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.concurrent.TimeUnit;
 
-public class Servidor extends Thread{
+public class Servidor extends Thread{ // el thread es para actualizar ciertos componentes gráficos
     //Atributos de la Clase Servidor
     public static Servidor instancia = null; // Creación de variable para patrón de diseño singleton.
     public int PUERTO = 5000; // Puerto en el que se va a crear el servidor.
@@ -49,38 +49,46 @@ public class Servidor extends Thread{
             gameFrame = new InterfazJuego(tablero, 1);
             frame.setVisible(false);
             Mensaje mensajeEnviado = new Mensaje(tablero, false, false, 0,0);
-            enviar.writeObject(mensajeEnviado); // el tablero es una lista, es decir, aquí se envía una lista**/
+            enviar.writeObject(mensajeEnviado); // se envía el tablero por sockets hacia el cliente para tener la misma disposición de casillas
 
-            while(gameState != 0) {
-                if (Servidor.getInstancia().gameFrame.isVisibleDado()) {
-                    TimeUnit.MILLISECONDS.sleep(100);
+            while(gameState != 0) { // Mientras el juego esté en curso
+
+                if (Servidor.getInstancia().gameFrame.isVisibleDado()) { // si es turno del Servidor
+
+                    TimeUnit.MILLISECONDS.sleep(100); // espera un rato
+
                     //Enviar coordenadas de fichaServer al cliente
                     int posServer = Servidor.getInstancia().gameFrame.getPosFicha1();
                     int posCliente = Servidor.getInstancia().gameFrame.getPosFicha2();
                     mensajeEnviado = new Mensaje(tablero, !Servidor.getInstancia().gameFrame.isVisibleDado(), reto, posCliente, posServer);
-                    enviar.writeObject(mensajeEnviado); //Se envía el objeto
+                    enviar.writeObject(mensajeEnviado); //Se envían las coordenadas al Cliente
                     enReto = false;
 
-                } else {
+                } else { // si no es turno del Servidor
+
                     TimeUnit.MILLISECONDS.sleep(100);
-                    Mensaje mensajeRecibido = (Mensaje) recibir.readObject();
+
+                    Mensaje mensajeRecibido = (Mensaje) recibir.readObject(); // recibe las coordenadas del Cliente
                     stateDado = mensajeRecibido.getDado();
                     reto = mensajeRecibido.getReto();
+
                     int posFicha2 = mensajeRecibido.getPosCliente();
                     int posFicha1 = mensajeRecibido.getPosServer();
-                    Servidor.getInstancia().gameFrame.setPosFicha2(posFicha2);
+
+                    Servidor.getInstancia().gameFrame.setPosFicha2(posFicha2); // actualiza las coordenadas del Cliente en esta ventana
                     Servidor.getInstancia().gameFrame.setPosFicha1(posFicha1);
                     gameFrame.setVisibleDado(stateDado);
 
-                    if (reto == true && enReto == false){
+                    if (reto == true && enReto == false){ // si la variable reto es verdadera, llama a una función para crear un reto en pantalla
                         gameFrame.generaReto(1);
-                        reto = false;
+                        reto = false; // desactiva la variable para que no vuelva a ingresar en el if aleatoriamente
                         enReto = true;
                         mensajeRecibido.setReto();
                     }
                 }
             }
-           socket.close();
+           socket.close(); // se termina la conexión por sockets cuando el juego termina
+
         } catch (IOException | ClassNotFoundException | InterruptedException ex){ //Excepción al no poder crear el servidor en el puerto indicado o un fallo en la conexión.
             JOptionPane.showMessageDialog(null,"No se pudo iniciar el servidor correctamente, reinicia la aplicación:\n" + ex.toString());
         }
@@ -99,7 +107,8 @@ public class Servidor extends Thread{
     }
 
     /*
-    * Función que me genera la interfaz de la pantalla inicial (nombre del juego, etc)
+    * Función que genera la interfaz de la pantalla inicial (nombre del juego, etc)
+    * Se crea una ventana para escribir el nombre y esperar jugadores
     */
     public void interfazInicio(){
         //Configuración del Label con Imagen
@@ -138,7 +147,7 @@ public class Servidor extends Thread{
         // Configuración del Botón de Jugar
         JButton play = new JButton("Jugar");
         play.addActionListener(new ActionListener(){
-            public void actionPerformed(ActionEvent e){
+            public void actionPerformed(ActionEvent e){ // función del dado para desactivar los campos de texto
                 nombreJugador1 = username.getText();
                 System.out.println(nombreJugador1);
                 play.setVisible(false);
@@ -156,6 +165,7 @@ public class Servidor extends Thread{
         frame = new JFrame();
         frame.setTitle("MathSocket - Servidor");
         frame.setSize(700, 400);
+        frame.setLocationRelativeTo(null);
         frame.setResizable(false);
         frame.setVisible(true);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

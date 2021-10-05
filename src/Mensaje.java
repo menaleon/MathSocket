@@ -1,6 +1,6 @@
 import java.io.Serializable;
 
-public class Mensaje implements Serializable{
+public class Mensaje implements Serializable{ // esta clase permite enviar datos al servidor o al cliente, por sockets
 
     DoublyLinkedList tablero;
     Boolean dado;
